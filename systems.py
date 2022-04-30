@@ -3,7 +3,7 @@
 import abc
 import re
 
-from .theory import *
+from theory import *
 
 class NotationError(Exception):
     """Exception raised for errors in string representations of musical notation.
@@ -66,6 +66,7 @@ class TwelveToneEqualTemperament(TuningSystem):
         return self.__r ** delta_halfstep
 
 class FiveLimitTuning(TuningSystem):
+    """Just intonation, with 5-limit tuning."""
 
     def __init__(self):
         self.__interval_ratio = [1, 25/24, 9/8, 6/5, 5/4, 4/3, 45/32, 3/2, 8/5, 5/3, 9/5, 15/8]
@@ -246,6 +247,30 @@ class MusicalSystem(abc.ABC):
         if not self.notation_system.validate_notation(notation):
             raise NotationError(notation, self.notation_system)
         return Note(self.get_frequency(notation))
+
+    def create_scale(self, notation: str, scale: Scale) -> list[Note]:
+        """Create a scale based on a starting note's notation and the scale structure.
+
+        Parameters
+        ----------
+        notation : str
+            The notation as a string.
+        scale : Scale
+            The 
+    
+        Returns
+        -------
+        list[Note]
+            A list of notes.
+        """
+        if not self.notation_system.validate_notation(notation):
+            raise NotationError(notation, self.notation_system)
+        scale_instance = [self.create_note(notation)]
+        for delta_unit in scale.increment:
+            frequency_ratio = self.tuning_system.get_frequency_ratio(delta_unit)
+            prev_note = scale_instance[-1]
+            scale_instance.append(Note(prev_note.frequency * frequency_ratio))
+        return scale_instance
 
 class WesternClassicalSystem(MusicalSystem):
     """A standard Western classical system, using IPN and 12-TET.
