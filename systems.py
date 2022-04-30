@@ -138,8 +138,15 @@ class InternationalPitchNotation(NotationSystem):
     """The international pitch notation, described by pitch name, accidental, and octave number."""
     
     def __init__(self):
+        self.__pitch_conversion = {"C": 0, "D": 2, "E": 4, "F": 5, "G": 7, "A": 9, "B": 11}
+        self.__accidental_conversion = {"𝄫": -2, "bb": -2, "double_flat": -2, "df": -2,
+                                 "♭": -1, "b": -1, "flat": -1, "f": -1,
+                                 "♮": 0, "": 0, "natural": 0, "n": 0,
+                                 "♯": 1, "#": 1, "sharp": 1, "s": 1,
+                                 "𝄪": 2, "x": 2, "double_sharp": 2, "ds": 2}
         self.__pitch = "[A-G]"
-        self.__accidental = "(𝄫|bb|double_flat|df|♭|b|flat|f|♮||natural|n|♯|#|sharp|s|𝄪|x|double_sharp|ds)"
+        self.__accidental = "(" + "|".join(self.__accidental_conversion.keys()) + ")"
+        # self.__accidental = "(𝄫|bb|double_flat|df|♭|b|flat|f|♮||natural|n|♯|#|sharp|s|𝄪|x|double_sharp|ds)"
         self.__octave = "[+-]?\d+"
         self._valid_notation_pattern = re.compile(self.__pitch + self.__accidental + self.__octave)
 
@@ -173,17 +180,7 @@ class InternationalPitchNotation(NotationSystem):
         accidental = notation[start_accidental_index : end_accidental_index]
         octave = notation[end_accidental_index : ]
 
-        pitch_conversion = {"C": 0, "D": 2, "E": 4, "F": 5, "G": 7, "A": 9, "B": 11}
-
-        # bad code...
-        # TODO: make sure that accidental_conversion and self.__accidental are always lined up
-        accidental_conversion = {"𝄫": -2, "bb": -2, "double_flat": -2, "df": -2,
-                                 "♭": -1, "b": -1, "flat": -1, "f": -1,
-                                 "♮": 0, "": 0, "natural": 0, "n": 0,
-                                 "♯": 1, "#": 1, "sharp": 1, "s": 1,
-                                 "𝄪": 2, "x": 2, "double_sharp": 2, "ds": 2}
-
-        return int(octave) * 12 + pitch_conversion[pitch] + accidental_conversion[accidental]
+        return int(octave) * 12 + self.__pitch_conversion[pitch] + self.__accidental_conversion[accidental]
 
     def get_interval_between(self, from_notation: str, to_notation: str) -> int:
         """Get the interval, in halfsteps, between two pitches based on their notations.
