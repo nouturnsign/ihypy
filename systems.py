@@ -3,20 +3,7 @@
 import abc
 import re
 
-class Note:
-    """A musical note, described by its frequency.
-
-    Attributes
-    ----------
-    frequency : int | float
-        The frequency, expressed in Hz.
-    """
-
-    def __init__(self, frequency: int | float):
-        self.frequency = frequency
-
-    def __str__(self):
-        return "Note{" + str(self.frequency) + " Hz}"
+from .theory import *
 
 class NotationError(Exception):
     """Exception raised for errors in string representations of musical notation.
@@ -321,11 +308,6 @@ class PtolemaicSystem(MusicalSystem):
         pitch_standard_notation, pitch_standard_frequency = self.pitch_standard
         delta_halfstep = self.notation_system.get_interval_between(pitch_standard_notation, notation)
         return pitch_standard_frequency * self.tuning_system.get_frequency_ratio(delta_halfstep)
-
-# class Chord:
-
-#     def __init__(self, note_list):
-#         self.note_list = note_list
 
 if __name__ == "__main__":
     WCS = WesternClassicalSystem()
