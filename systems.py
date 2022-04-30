@@ -78,11 +78,32 @@ class TwelveToneEqualTemperament(TuningSystem):
         """
         return self.__r ** delta_halfstep
 
-# TODO: this
-class JustIntonation(TuningSystem):
+class FiveLimitTuning(TuningSystem):
 
     def __init__(self):
+        self.__interval_ratio = [1, 25/24, 9/8, 6/5, 5/4, 4/3, 45/32, 3/2, 8/5, 5/3, 9/5, 15/8]
+        self.__octave_ratio = 2
         pass
+
+    def __str__(self):
+        return "FiveLimitTuning"
+
+    def get_frequency_ratio(self, delta_halfstep: int) -> float:
+        """Get the frequency ratio based on the number of halfsteps between two notes. This is the ratio between the after and before pitch.
+
+        Parameters
+        ----------
+        delta_halfstep : int
+            The integer number of halfsteps going from a pitch to another. A negative value indicates going down to the note.
+
+        Returns
+        -------
+        float
+            The ratio of frequencies.
+        """
+        ascending = 1 if delta_halfstep >= 0 else -1
+        octave, interval = divmod(abs(delta_halfstep), 12)
+        return (self.__octave_ratio ** octave * self.__interval_ratio[interval]) ** ascending
 
 class NotationSystem(abc.ABC):
     """Abstract class for notation systems.
@@ -273,6 +294,37 @@ class WesternClassicalSystem(MusicalSystem):
         delta_halfstep = self.notation_system.get_interval_between(pitch_standard_notation, notation)
         return pitch_standard_frequency * self.tuning_system.get_frequency_ratio(delta_halfstep)
 
+class PtolemaicSystem(MusicalSystem):
+    """A Ptolemaic sequence, or justly tuned major scale, using IPN and 5-limit tuning.
+    
+    Methods
+    -------
+    get_frequency(notation: str) -> float
+        Get the frequency, tuned by Ptolemy's intense diatonic scale, associated with the notation expressed in IPN.
+    """
+
+    def __init__(self):
+        super().__init__(InternationalPitchNotation(), FiveLimitTuning(), "A4", 440)
+
+    def get_frequency(self, notation: str) -> float:
+        """Get the 5-limit tuning frequency of the IPN notation.
+
+        Parameters
+        ----------
+        notation : str
+            The IPN notation as a string.
+    
+        Returns
+        -------
+        float
+            The frequency, in Hz.
+        """
+        if not self.notation_system.validate_notation(notation):
+            raise NotationError(self.notation_system, self.tuning_system)
+        pitch_standard_notation, pitch_standard_frequency = self.pitch_standard
+        delta_halfstep = self.notation_system.get_interval_between(pitch_standard_notation, notation)
+        return pitch_standard_frequency * self.tuning_system.get_frequency_ratio(delta_halfstep)
+
 # class Chord:
 
 #     def __init__(self, note_list):
@@ -280,5 +332,9 @@ class WesternClassicalSystem(MusicalSystem):
 
 if __name__ == "__main__":
     WCS = WesternClassicalSystem()
-    note = WCS.create_note("Gflat2")
-    print(note)
+    PS = PtolemaicSystem()
+
+    print(WCS.create_note("Csharp4"))
+    print(PS.create_note("Csharp4"))
+    print(WCS.create_note("Csharp5"))
+    print(PS.create_note("Csharp5"))
