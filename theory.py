@@ -42,12 +42,31 @@ class Scale(Piece):
     def increment(self):
         return self._increment
 
-class MajorScale(Scale):
-    """A standard Western major scale."""
+class IonianScale(Scale):
+    """One of the seven classical Greek modes, commonly referred to as the major scale."""
 
     def __init__(self, octaves : int = 1):
         # TODO: assert that there is a valid number of octaves
         self._increment = [2, 2, 1, 2, 2, 2, 1] * octaves # halfsteps between each note
+
+class MajorScale(IonianScale):
+    """A standard Western major scale."""
+
+    def __init__(self, octaves : int = 1):
+        super().__init__(octaves)
+
+class AeolianScale(Scale):
+    """One of the seven classical Greek modes, commonly referred to as the natural minor scale."""
+
+    def __init__(self, octaves : int = 1):
+        # TODO: assert that there is a valid number of octaves
+        self._increment = [2, 1, 2, 2, 1, 2, 2] * octaves # halfsteps between each note
+
+class NaturalMinorScale(AeolianScale):
+    """A standard Western natural minor scale."""
+
+    def __init__(self, octaves : int = 1):
+        super().__init__(octaves)
 
 # class Chord:
 
