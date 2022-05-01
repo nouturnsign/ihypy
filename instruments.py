@@ -95,6 +95,23 @@ class Piano(Instrument):
     def __str__(self):
         return "Piano"
 
+class Trumpet(Instrument):
+    """A generated trumpet from an actual middle C.
+    
+    Notes
+    -----
+    Audio of middle C taken from https://www.ee.columbia.edu/~dpwe/sounds/instruments/
+    """
+
+    def __init__(self):
+        self._base_sound = AudioSegment.from_file('instrument_audio_clips/trumpet-C4.wav', format="wav")
+        self._base_frequency = 261
+        super().__init__()
+
+    def __str__(self):
+        return "Trumpet"
+
+
 class Violin(Instrument):
     """A generated violin from an actual middle C.
     
@@ -111,9 +128,31 @@ class Violin(Instrument):
     def __str__(self):
         return "Violin"
 
+class Flute(Instrument):
+    """A generated flute from an actual middle C.
+    
+    Notes
+    -----
+    Audio of middle C taken from https://www.ee.columbia.edu/~dpwe/sounds/instruments/
+    """
+
+    def __init__(self):
+        self._base_sound = AudioSegment.from_file('instrument_audio_clips/flute-C4.wav', format="wav")
+        self._base_frequency = 261
+        super().__init__()
+    
+    def __str__(self):
+        return "Flute"
+
 if __name__ == "__main__":
     piano = Piano()
     piano.play_frequency(440)
 
+    trumpet = Trumpet()
+    trumpet.play_frequency(440)
+
     violin = Violin()
     violin.play_frequency(440)
+
+    flute = Flute()
+    flute.play_frequency(440)
