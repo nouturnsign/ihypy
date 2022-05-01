@@ -111,7 +111,6 @@ class Trumpet(Instrument):
     def __str__(self):
         return "Trumpet"
 
-
 class Violin(Instrument):
     """A generated violin from an actual middle C.
     

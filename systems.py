@@ -38,7 +38,6 @@ class TuningSystem(abc.ABC):
     def get_frequency_ratio(self, delta_unit: int | float) -> int | float:
         pass
 
-# TODO: abstract an EqualTemperament class
 class TwelveToneEqualTemperament(TuningSystem):
     """A 12 tone equal temperament tuning system, standard for pianos."""
 

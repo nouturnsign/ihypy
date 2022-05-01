@@ -18,10 +18,6 @@ class Note:
     def __repr__(self):
         return str(self)
 
-# abstract class Piece
-# class Scale(Piece)
-# class MajorScale(Scale)
-
 class Piece(abc.ABC):
     """Abstract class for collections of notes."""
     
@@ -100,9 +96,6 @@ class NaturalMinorScale(AeolianScale):
     def __init__(self, octaves : int = 1):
         super().__init__(octaves)
 
-# TODO: write a Unit abstract class to establish equivalent between certain units
-# Unit might belong under systems
-
 class Interval(abc.ABC):
     """An abstract class for intervals.
     
@@ -178,7 +171,6 @@ class PerfectFifth(SemitoneInterval):
         super().__init__(7)
 
 # TODO: define the intervals under https://en.wikipedia.org/wiki/Interval_(music)#Main_intervals
-# TODO: have a music system actually be able to create a chord
 # TODO: have an instrument be able to play a chord
 
 class Chord(abc.ABC):
