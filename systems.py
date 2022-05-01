@@ -204,10 +204,13 @@ class MusicalSystem(abc.ABC):
     -------
     create_note(notation: str) -> Note
         Create a note with the given notation based on the musical system's notation_system and tuning_system.
+
+    create_scale(notation: str, scale: Scale) -> list[Note]
+        Create a list of notes starting from the given notation based on the scale increments and musical system's notation_system and tuning_system.
     """
     
     @abc.abstractmethod
-    def __init__(self, notation_system, tuning_system, pitch_standard_notation, pitch_standard_frequency):
+    def __init__(self):
         pass
 
     @property
