@@ -115,9 +115,6 @@ class Interval(abc.ABC):
     def __init__(self):
         pass
 
-    def __str__(self):
-        return "Interval{" + str(self.relation) + " " + self.unit + "}"
-
     @property
     def relation(self):
         return self._relation
@@ -125,6 +122,19 @@ class Interval(abc.ABC):
     @property
     def unit(self):
         return self._unit
+
+    def __str__(self):
+        return "Interval{" + str(self.relation) + " " + self.unit + "}"
+
+    def __repr__(self):
+        return str(self)
+
+    def __eq__(self, other):
+        if self == other:
+            return True
+        if not issubclass(other, Interval):
+            return False
+        return self.relation == other.relation and self.unit == other.unit
 
 class SemitoneInterval(Interval):
     """An interval, in terms of absolute semitones."""
@@ -152,6 +162,18 @@ class Semitone(SemitoneInterval):
     def __init__(self):
         super().__init__(1)
 
+class MajorThird(SemitoneInterval):
+    """A Western major third."""
+
+    def __init__(self):
+        super().__init__(4)
+
+class PerfectFifth(SemitoneInterval):
+    """A Western perfect fifth."""
+
+    def __init__(self):
+        super().__init__(7)
+
 # TODO: define the intervals under https://en.wikipedia.org/wiki/Interval_(music)#Main_intervals
 # TODO: have a music system actually be able to create a chord
 # TODO: have an instrument be able to play a chord
@@ -161,8 +183,8 @@ class Chord(abc.ABC):
     
     Attributes
     ----------
-    frequency_ratio: list[float]
-        The list of frequency ratios from the tonic.
+    intervals: list[Interval]
+        The list of intervals from the tonic. The intervals should be sorted in order of lowest interval to highest interval. Do not include the unison.
     """
 
     @abc.abstractmethod
@@ -172,3 +194,33 @@ class Chord(abc.ABC):
     @property
     def intervals(self):
         return self._intervals
+
+    def __str__(self):
+        return str(self.intervals)
+
+    def __eq__(self, other):
+        if self == other:
+            return True
+        if not issubclass(other, Interval):
+            return False
+        return self.intervals == other.intervals
+
+class SemitoneChord(Chord):
+    """A chord, in terms of absolute semitones."""
+
+    def __init__(self, intervals):
+        self._intervals = intervals
+
+class MajorTriad(SemitoneChord):
+    """A major triad."""
+
+    def __init__(self):
+        super().__init__([MajorThird(), PerfectFifth()])
+
+# TODO: define arpeggios to be consistent with chords
+# TODO: define chord dictionary for consistency and interpretation
+
+if __name__ == "__main__":
+
+    major_triad = MajorTriad()
+    print(major_triad)

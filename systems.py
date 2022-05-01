@@ -98,7 +98,7 @@ class NotationSystem(abc.ABC):
     Attributes
     ----------
     valid_notation_pattern : re.Pattern
-        The regular expression to fully match a note's notation.
+        The regular expression to fully match a musical object's notation.
     """
 
     @abc.abstractmethod
@@ -114,14 +114,26 @@ class NotationSystem(abc.ABC):
         return self._valid_notation_pattern
 
     @abc.abstractmethod
-    def validate_notation(self, notation):
+    def validate_notation(self, notation: str) -> bool:
+        pass
+
+class NoteNotationSystem(NotationSystem):
+    """Abstract class for notation systems of musical notes.
+
+    Attributes
+    ----------
+    valid_notation_pattern : re.Pattern
+        The regular expression to fully match a note's notation.
+    """
+    @abc.abstractmethod
+    def __init__(self):
         pass
 
     @abc.abstractmethod
-    def get_interval_between(self, from_notation, to_notation):
+    def get_interval_between(self, from_notation: str, to_notation: str) -> Interval:
         pass
 
-class InternationalPitchNotation(NotationSystem):
+class InternationalPitchNotation(NoteNotationSystem):
     """The international pitch notation, described by pitch name, accidental, and octave number."""
     
     def __init__(self):
@@ -169,7 +181,7 @@ class InternationalPitchNotation(NotationSystem):
 
         return int(octave) * 12 + self.__pitch_conversion[pitch] + self.__accidental_conversion[accidental]
 
-    def get_interval_between(self, from_notation: str, to_notation: str) -> int:
+    def get_interval_between(self, from_notation: str, to_notation: str) -> SemitoneInterval:
         """Get the interval, in halfsteps, between two pitches based on their notations.
 
         Parameters
@@ -181,12 +193,35 @@ class InternationalPitchNotation(NotationSystem):
 
         Returns
         -------
-        int
-            The number of halfsteps. A negative number indicates going down.
+        SemitoneInterval
+            An interval with the number of halfsteps. A negative number indicates going down.
         """
-        # currently returns as a number of halfsteps
-        # this should never return something in terms of frequency
-        return self.__get_absolute_halfstep(to_notation) - self.__get_absolute_halfstep(from_notation)
+        return SemitoneInterval(self.__get_absolute_halfstep(to_notation) - self.__get_absolute_halfstep(from_notation))
+
+class IntervalNotationSystem(NotationSystem):
+    """Abstract class for notation systems of musical intervals.
+
+    Attributes
+    ----------
+    valid_notation_pattern : re.Pattern
+        The regular expression to fully match an interval's notation.
+    """
+    @abc.abstractmethod
+    def __init__(self):
+        pass
+
+    @abc.abstractmethod
+    def get_interval(self, notation: str) -> Interval:
+        pass
+
+class NumberQualitySystem(IntervalNotationSystem):
+    """Interval notation using number and quality for the chromatic scale."""
+
+    def __init__(self):
+        # TODO: set self._valid_notation_pattern
+        pass
+
+    # TODO: define how to parse notation for an interval
 
 class MusicalSystem(abc.ABC):
     """Abstract class for musical systems, containing a notation system, tuning system, and pitch standard.
@@ -301,7 +336,7 @@ class WesternClassicalSystem(MusicalSystem):
         if not self.notation_system.validate_notation(notation):
             raise NotationError(self.notation_system, self.tuning_system)
         pitch_standard_notation, pitch_standard_frequency = self.pitch_standard
-        delta_halfstep = self.notation_system.get_interval_between(pitch_standard_notation, notation)
+        delta_halfstep = self.notation_system.get_interval_between(pitch_standard_notation, notation).relation
         return pitch_standard_frequency * self.tuning_system.get_frequency_ratio(delta_halfstep)
 
 class PtolemaicSystem(MusicalSystem):
@@ -335,7 +370,7 @@ class PtolemaicSystem(MusicalSystem):
         if not self.notation_system.validate_notation(notation):
             raise NotationError(self.notation_system, self.tuning_system)
         pitch_standard_notation, pitch_standard_frequency = self.pitch_standard
-        delta_halfstep = self.notation_system.get_interval_between(pitch_standard_notation, notation)
+        delta_halfstep = self.notation_system.get_interval_between(pitch_standard_notation, notation).relation
         return pitch_standard_frequency * self.tuning_system.get_frequency_ratio(delta_halfstep)
 
 if __name__ == "__main__":
