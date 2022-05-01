@@ -79,7 +79,7 @@ class AeolianScale(Scale):
         # TODO: assert that there is a valid number of octaves
         self._increment = [2, 1, 2, 2, 1, 2, 2] * octaves # halfsteps between each note
 
-class LocianScale(Scale):
+class LocrianScale(Scale):
     """One of the seven modern modes."""
     def __init__(self, octaves : int = 1):
         # TODO: assert that there is a valid number of octaves
