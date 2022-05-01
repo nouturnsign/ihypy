@@ -17,7 +17,6 @@ class NotationError(Exception):
     """
 
     def __init__(self, notation: str, notation_system: str):
-        super().__init__(notation)
         self.notation = notation
         self.notation_system = notation_system
 
@@ -209,10 +208,6 @@ class MusicalSystem(abc.ABC):
     
     @abc.abstractmethod
     def __init__(self, notation_system, tuning_system, pitch_standard_notation, pitch_standard_frequency):
-        self._notation_system = notation_system
-        self._tuning_system = tuning_system
-        self._pitch_standard_notation = pitch_standard_notation
-        self._pitch_standard_frequency = pitch_standard_frequency
         pass
 
     @property
@@ -256,7 +251,7 @@ class MusicalSystem(abc.ABC):
         notation : str
             The notation as a string.
         scale : Scale
-            The 
+            The structure of the scale.
     
         Returns
         -------
@@ -282,7 +277,10 @@ class WesternClassicalSystem(MusicalSystem):
     """
 
     def __init__(self):
-        super().__init__(InternationalPitchNotation(), TwelveToneEqualTemperament(), "A4", 440)
+        self._notation_system = InternationalPitchNotation()
+        self._tuning_system = TwelveToneEqualTemperament()
+        self._pitch_standard_notation = "A4"
+        self._pitch_standard_frequency = 440
 
     def get_frequency(self, notation: str) -> float:
         """Get the 12-TET frequency of the IPN notation.
@@ -313,7 +311,10 @@ class PtolemaicSystem(MusicalSystem):
     """
 
     def __init__(self):
-        super().__init__(InternationalPitchNotation(), FiveLimitTuning(), "A4", 440)
+        self._notation_system = InternationalPitchNotation()
+        self._tuning_system = FiveLimitTuning()
+        self._pitch_standard_notation = "A4"
+        self._pitch_standard_frequency = 440
 
     def get_frequency(self, notation: str) -> float:
         """Get the 5-limit tuning frequency of the IPN notation.
