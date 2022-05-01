@@ -97,7 +97,18 @@ class NaturalMinorScale(AeolianScale):
     def __init__(self, octaves : int = 1):
         super().__init__(octaves)
 
-# class Chord:
+class Chord(abc.ABC):
+    """An abstract class describing a chord.
+    
+    Attributes
+    ----------
+    frequency_ratio: list[float]
+        The list of frequency ratios from the tonic.
+    """
 
-#     def __init__(self, note_list):
-#         self.note_list = note_list
+    def __init__(self):
+        pass
+
+    @property
+    def frequency_ratio(self):
+        return self._frequency_ratio
