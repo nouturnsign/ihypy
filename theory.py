@@ -15,6 +15,9 @@ class Note:
     def __str__(self):
         return "Note{" + str(self.frequency) + " Hz}"
 
+    def __repr__(self):
+        return str(self)
+
 # abstract class Piece
 # class Scale(Piece)
 # class MajorScale(Scale)
