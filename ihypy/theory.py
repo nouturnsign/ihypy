@@ -148,8 +148,6 @@ class Interval(_abc.ABC):
         return str(self)
 
     def __eq__(self, other):
-        if self == other:
-            return True
         if not issubclass(type(other), Interval):
             return False
         return self.relation == other.relation and self.unit == other.unit
@@ -219,8 +217,6 @@ class Chord(_abc.ABC):
         return str(self)
 
     def __eq__(self, other):
-        if self == other:
-            return True
         if not issubclass(type(other), Chord):
             return False
         return self.intervals == other.intervals
