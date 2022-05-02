@@ -21,6 +21,9 @@ class Instrument(_abc.ABC):
         Play a note on the instrument for duration number of milliseconds.
     play_scale(scale: list[Note], duration: int = 10000) -> None
         Play a list of notes as a scale for roughly duration number of milliseconds.
+    play_arpeggio(chord: list[list[Note]], duration: int = 10000) -> None
+        Play a list of singletons containing notes as an arpeggio for roughly duration number of milliseconds.
+    
     """
 
     @_abc.abstractmethod
@@ -94,7 +97,46 @@ class Instrument(_abc.ABC):
         None
         """
         note_duration = duration // len(scale)
+        # concatenates audio
         new_sound = sum(self.__get_audio(note.frequency, note_duration) for note in scale)
+        _playback.play(new_sound)
+
+    def play_arpeggio(self, chord: list[list[_theory.Note]], duration: int = 10000) -> None:
+        """Play the given instance of a chord as an arpeggio, generated using the timbre of the instrument.
+        
+        Parameters
+        ----------
+        chord: list[list[Note]]
+            The list of singletons containing notes to be played.
+        duration: int
+            The number of milliseconds over which the chord should be arpeggiated.
+
+        Returns
+        -------
+        None
+        """
+        scale = list(voice[0] for voice in chord)
+        # pseudo-scale
+        self.play_scale(scale, duration)
+
+    def play_chord(self, chord: list[list[_theory.Note]], duration: int = 1000) -> None:
+        """Play the given instance of a chord as an arpeggio, generated using the timbre of the instrument.
+        
+        Parameters
+        ----------
+        chord: list[list[Note]]
+            The list of singletons containing notes to be played.
+        duration: int
+            The number of milliseconds over which the chord should be arpeggiated.
+
+        Returns
+        -------
+        None
+        """
+        new_sound = self.__get_audio(chord[0][0].frequency, duration)
+        # overlays audio
+        for i in range(1, len(chord)):
+            new_sound *= self.__get_audio(chord[i][0].frequency, duration)
         _playback.play(new_sound)
 
 class Piano(Instrument):
