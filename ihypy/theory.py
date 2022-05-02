@@ -16,7 +16,7 @@ class IntervalLengthError(Exception):
         self.interval = interval
 
     def __str__(self):
-        return f"{self.value} is not a valid number of {self.interval} intervals."
+        return f"{self.value} is not a valid value for {self.interval} intervals."
 
 class Note:
     """A musical note, described by its frequency.
@@ -39,14 +39,14 @@ class Note:
 # TODO: Create musical units
 
 class Piece(abc.ABC):
-    """Abstract class for collections of notes."""
+    """Abstract class for collections of relationships of notes."""
     
     @abc.abstractmethod
     def __init__(self):
         pass
 
 class Scale(Piece):
-    """Base class for scales, sequences of singular notes.
+    """Base class for scales, relationships defining sequences of notes.
     
     Attributes
     ----------
@@ -67,7 +67,7 @@ class Scale(Piece):
 class SemitoneScale(Scale):
     """Base class for semitone-based scales."""
 
-    def __init__(self, increment, octaves):
+    def __init__(self, increment: list[float], octaves: int):
         if not isinstance(octaves, int) or octaves < 1:
             raise IntervalLengthError(octaves, "octave")
         self._increment = increment * octaves
@@ -75,27 +75,26 @@ class SemitoneScale(Scale):
 
 class IonianScale(SemitoneScale):
     """One of the seven modern modes, commonly referred to as the major scale."""
-
     def __init__(self, octaves : int = 1):
         super().__init__([2, 2, 1, 2, 2, 2, 1], octaves)
 
 class DorianScale(SemitoneScale):
-    """One of the seven modern modes."""
+    """One of the seven modern modes, formed by starting and ending on the second degree of a major scale."""
     def __init__(self, octaves : int = 1):
         super().__init__([2, 1, 2, 2, 2, 1, 2], octaves)
 
 class PhrygianScale(SemitoneScale):
-    """One of the seven modern modes."""
+    """One of the seven modern modes, formed by starting and ending on the third degree of a major scale."""
     def __init__(self, octaves : int = 1):
         super().__init__([1, 2, 2, 2, 1, 2, 2], octaves)
 
 class LydianScale(SemitoneScale):
-    """One of the seven modern modes."""
+    """One of the seven modern modes, formed by starting and ending on the fourth degree of a major scale."""
     def __init__(self, octaves : int = 1):
         super().__init__([2, 2, 2, 1, 2, 2, 1], octaves)
 
 class MixolydianScale(SemitoneScale):
-    """One of the seven modern modes."""
+    """One of the seven modern modes, formed by starting and ending on the fifth degree of a major scale."""
     def __init__(self, octaves : int = 1):
         super().__init__([2, 2, 1, 2, 2, 1, 2], octaves)
 
@@ -105,19 +104,17 @@ class AeolianScale(SemitoneScale):
         super().__init__([2, 1, 2, 2, 1, 2, 2], octaves)
 
 class LocrianScale(SemitoneScale):
-    """One of the seven modern modes."""
+    """One of the seven modern modes, formed by starting and ending on the seventh degree of a major scale."""
     def __init__(self, octaves : int = 1):
         super().__init__([1, 2, 2, 1, 2, 2, 2], octaves)
 
 class MajorScale(IonianScale):
     """A standard Western major scale."""
-
     def __init__(self, octaves : int = 1):
         super().__init__(octaves)
 
 class NaturalMinorScale(AeolianScale):
     """A standard Western natural minor scale."""
-
     def __init__(self, octaves : int = 1):
         super().__init__(octaves)
 
@@ -153,7 +150,7 @@ class Interval(abc.ABC):
     def __eq__(self, other):
         if self == other:
             return True
-        if not issubclass(other, Interval):
+        if not issubclass(type(other), Interval):
             return False
         return self.relation == other.relation and self.unit == other.unit
 
@@ -218,10 +215,13 @@ class Chord(abc.ABC):
     def __str__(self):
         return str(self.intervals)
 
+    def __repr__(self):
+        return str(self)
+
     def __eq__(self, other):
         if self == other:
             return True
-        if not issubclass(other, Interval):
+        if not issubclass(type(other), Chord):
             return False
         return self.intervals == other.intervals
 
