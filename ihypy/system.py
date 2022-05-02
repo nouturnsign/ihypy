@@ -501,13 +501,13 @@ class MusicalSystem(_abc.ABC):
 
         # add >7 extension (major/perfect), then replace with a 7
         if "13" in extension:
-            intervals.append(_theory.SemitoneInterval(21))
+            intervals.append(_theory.MajorThirteenth())
             extension.replace("13", "7")
         elif "11" in extension:
-            intervals.append(_theory.SemitoneInterval(17))
+            intervals.append(_theory.PerfectEleventh())
             extension.replace("11", "7")
         elif "9" in extension:
-            intervals.append(_theory.SemitoneInterval(14))
+            intervals.append(_theory.MajorNinth())
             extension.replace("9", "7")
 
         # process any of the tertian sevenths
@@ -515,68 +515,68 @@ class MusicalSystem(_abc.ABC):
 
             # minor-major
             if ("m" in extension or "-" in extension) and ("M" in extension or "∆" in extension):
-                intervals.append(_theory.SemitoneInterval(11))
-                intervals.append(_theory.SemitoneInterval(7))
-                intervals.append(_theory.SemitoneInterval(3))
+                intervals.append(_theory.MajorSeventh())
+                intervals.append(_theory.PerfectFifth())
+                intervals.append(_theory.MinorThird())
 
             # augmented major
             elif ("aug" in extension or "+" in extension) and ("M" in extension or "∆" in extension):
-                intervals.append(_theory.SemitoneInterval(11))
-                intervals.append(_theory.SemitoneInterval(8))
-                intervals.append(_theory.SemitoneInterval(4))
+                intervals.append(_theory.MajorSeventh())
+                intervals.append(_theory.AugmentedFifth())
+                intervals.append(_theory.MajorThird())
 
             # half-dim
             elif ("halfdim" in extension or "ø" in extension):
-                intervals.append(_theory.SemitoneInterval(10))
-                intervals.append(_theory.SemitoneInterval(6))
-                intervals.append(_theory.SemitoneInterval(3))
+                intervals.append(_theory.MinorSeventh(10))
+                intervals.append(_theory.DiminishedFifth(6))
+                intervals.append(_theory.MinorThird(3))
 
             # dim
             elif ("dim" in extension or "o" in extension or "°" in extension):
-                intervals.append(_theory.SemitoneInterval(9))
-                intervals.append(_theory.SemitoneInterval(6))
-                intervals.append(_theory.SemitoneInterval(3))
+                intervals.append(_theory.DiminishedSeventh(9))
+                intervals.append(_theory.DiminishedFifth(6))
+                intervals.append(_theory.MinorThird(3))
 
             # major
             elif ("M" in extension or "∆" in extension):
-                intervals.append(_theory.SemitoneInterval(11))
-                intervals.append(_theory.SemitoneInterval(7))
-                intervals.append(_theory.SemitoneInterval(4))
+                intervals.append(_theory.MajorSeventh())
+                intervals.append(_theory.PerfectFifth())
+                intervals.append(_theory.MajorThird())
 
             # minor
             elif ("m" in extension or "-" in extension):
-                intervals.append(_theory.SemitoneInterval(10))
-                intervals.append(_theory.SemitoneInterval(7))
-                intervals.append(_theory.SemitoneInterval(3))
+                intervals.append(_theory.MinorSeventh())
+                intervals.append(_theory.PerfectFifth())
+                intervals.append(_theory.MinorThird())
 
             # dom
             else:
-                intervals.append(_theory.SemitoneInterval(10))
-                intervals.append(_theory.SemitoneInterval(7))
-                intervals.append(_theory.SemitoneInterval(4))
+                intervals.append(_theory.MinorSeventh())
+                intervals.append(_theory.PerfectFifth())
+                intervals.append(_theory.MajorThird())
 
         # process any triads
         else:
 
             # diminished
             if ("dim" in extension or "o" in extension or "°" in extension):
-                intervals.append(_theory.SemitoneInterval(6))
-                intervals.append(_theory.SemitoneInterval(3))
+                intervals.append(_theory.DiminishedFifth())
+                intervals.append(_theory.MinorThird())
 
             # augmented
             elif ("aug" in extension or "+" in extension):
-                intervals.append(_theory.SemitoneInterval(8))
-                intervals.append(_theory.SemitoneInterval(4))
+                intervals.append(_theory.AugmentedFifth())
+                intervals.append(_theory.MajorThird())
 
             # minor
             elif ("m" in extension or "-" in extension):
-                intervals.append(_theory.SemitoneInterval(7))
-                intervals.append(_theory.SemitoneInterval(3))
+                intervals.append(_theory.PerfectFifth())
+                intervals.append(_theory.MinorThird())
 
             # major
             else:
-                intervals.append(_theory.SemitoneInterval(7))
-                intervals.append(_theory.SemitoneInterval(4))
+                intervals.append(_theory.PerfectFifth(7))
+                intervals.append(_theory.MajorThird())
 
         return intervals
 
@@ -614,33 +614,33 @@ class MusicalSystem(_abc.ABC):
     def __parse_suspension(self, suspension, intervals):
 
         if suspension == "sus2" or suspension == "sus4":
-            if _theory.SemitoneInterval(3) in intervals:
-                intervals.remove(_theory.SemitoneInterval(3))
-            elif _theory.SemitoneInterval(4) in intervals:
-                intervals.remove(_theory.SemitoneInterval(4))
+            if _theory.MinorThird() in intervals:
+                intervals.remove(_theory.MinorThird())
+            elif _theory.MajorThird() in intervals:
+                intervals.remove(_theory.MajorThird())
             
             if suspension == "sus2":
-                intervals.append(_theory.SemitoneInterval(2))
+                intervals.append(_theory.MajorSecond())
             else:
-                intervals.append(_theory.SemitoneInterval(5))
+                intervals.append(_theory.PerfectFourth())
 
         elif suspension == "sus9":
-            intervals.append(_theory.SemitoneInterval(14))
+            intervals.append(_theory.MajorNinth())
         elif suspension == "sus11":
-            intervals.append(_theory.SemitoneInterval(17))
+            intervals.append(_theory.PerfectEleventh())
 
         return intervals
 
     def __parse_add(self, add):
 
         if add == "add2":
-            return _theory.SemitoneInterval(2)
+            return _theory.MajorSecond()
         elif add == "add4":
-            return _theory.SemitoneInterval(5)
+            return _theory.PerfectFourth()
         elif add == "add6":
-            return _theory.SemitoneInterval(9)
+            return _theory.MajorSixth()
         elif add == "add9":
-            return _theory.SemitoneInterval(14)
+            return _theory.MajorNinth()
 
     def _create_semitone_chord(self, chord: _theory.SemitoneChord | str, note: _theory.Note | str = None) -> list[list[_theory.Note]] | _theory.SemitoneChord:
         """Create a chord based on a tonic note's notation and the chord structure.
