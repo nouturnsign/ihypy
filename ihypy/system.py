@@ -1,7 +1,7 @@
-import abc
-import re
+import abc as _abc
+import re as _re
 
-from .theory import *
+from . import theory as _theory
 
 class NotationError(Exception):
     """Exception raised for errors in string representations of musical notation.
@@ -21,18 +21,18 @@ class NotationError(Exception):
     def __str__(self):
         return f"{self.notation} is not a valid musical notation in the {self.notation_system} notation system."
 
-class TuningSystem(abc.ABC):
+class TuningSystem(_abc.ABC):
     """Abstract class for tuning systems."""
 
-    @abc.abstractmethod
+    @_abc.abstractmethod
     def __init__(self):
         pass
 
-    @abc.abstractmethod
+    @_abc.abstractmethod
     def __str__(self):
         pass
 
-    @abc.abstractmethod
+    @_abc.abstractmethod
     def get_frequency_ratio(self, delta_unit: int | float) -> int | float:
         pass
 
@@ -89,7 +89,7 @@ class FiveLimitTuning(TuningSystem):
         octave, interval = divmod(abs(delta_half_step), 12)
         return (self.__octave_ratio ** octave * self.__interval_ratio[interval]) ** ascending
 
-class NotationSystem(abc.ABC):
+class NotationSystem(_abc.ABC):
     """Abstract class for notation systems.
 
     Attributes
@@ -103,16 +103,16 @@ class NotationSystem(abc.ABC):
         Check whether a certain notation is valid, based on the valid_notation_pattern.
     """
 
-    @abc.abstractmethod
+    @_abc.abstractmethod
     def __init__(self):
         pass
 
-    @abc.abstractmethod
+    @_abc.abstractmethod
     def __str__(self):
         pass
 
     @property
-    def valid_notation_pattern(self) -> re.Pattern:
+    def valid_notation_pattern(self) -> _re.Pattern:
         return self._valid_notation_pattern
 
     def validate_notation(self, notation: str) -> bool:
@@ -128,7 +128,7 @@ class NotationSystem(abc.ABC):
         bool
             Whether the notation was valid.
         """
-        return re.fullmatch(self.valid_notation_pattern, notation) is not None
+        return _re.fullmatch(self.valid_notation_pattern, notation) is not None
 
 class NoteNotationSystem(NotationSystem):
     """Abstract class for notation systems of musical notes.
@@ -139,8 +139,8 @@ class NoteNotationSystem(NotationSystem):
         Get the interval between two notes based on their notations.
     """
 
-    @abc.abstractmethod
-    def get_interval_between(self, from_notation: str, to_notation: str) -> Interval:
+    @_abc.abstractmethod
+    def get_interval_between(self, from_notation: str, to_notation: str) -> _theory.Interval:
         pass
 
 class InternationalPitchNotation(NoteNotationSystem):
@@ -157,7 +157,7 @@ class InternationalPitchNotation(NoteNotationSystem):
         self.__accidental = "(" + "|".join(self.__accidental_conversion.keys()) + ")"
         # self.__accidental = "(𝄫|bb|double_flat|df|♭|b|flat|f|♮||natural|n|♯|#|sharp|s|𝄪|x|double_sharp|ds)"
         self.__octave = "[+-]?\d+"
-        self._valid_notation_pattern = re.compile(self.__pitch + self.__accidental + self.__octave)
+        self._valid_notation_pattern = _re.compile(self.__pitch + self.__accidental + self.__octave)
 
     def __str__(self):
         return "International Pitch Notation"
@@ -165,8 +165,8 @@ class InternationalPitchNotation(NoteNotationSystem):
     def __get_absolute_half_step(self, notation):
         # get the absolute number of half_steps, with 0 half_steps defined as C0.
 
-        _, start_accidental_index = re.search(self.__pitch, notation).span()
-        end_accidental_index, _ = re.search(self.__octave, notation).span()
+        _, start_accidental_index = _re.search(self.__pitch, notation).span()
+        end_accidental_index, _ = _re.search(self.__octave, notation).span()
         
         pitch = notation[ : start_accidental_index]
         accidental = notation[start_accidental_index : end_accidental_index]
@@ -174,7 +174,7 @@ class InternationalPitchNotation(NoteNotationSystem):
 
         return int(octave) * 12 + self.__pitch_conversion[pitch] + self.__accidental_conversion[accidental]
 
-    def get_interval_between(self, from_notation: str, to_notation: str) -> SemitoneInterval:
+    def get_interval_between(self, from_notation: str, to_notation: str) -> _theory.SemitoneInterval:
         """Get the interval, in half_steps, between two pitches based on their notations.
 
         Parameters
@@ -198,7 +198,7 @@ class InternationalPitchNotation(NoteNotationSystem):
             raise NotationError(from_notation, self)
         if not self.validate_notation(to_notation):
             raise NotationError(to_notation, self)
-        return SemitoneInterval(self.__get_absolute_half_step(to_notation) - self.__get_absolute_half_step(from_notation))
+        return _theory.SemitoneInterval(self.__get_absolute_half_step(to_notation) - self.__get_absolute_half_step(from_notation))
 
 class IntervalNotationSystem(NotationSystem):
     """Abstract class for notation systems of musical intervals.
@@ -208,12 +208,12 @@ class IntervalNotationSystem(NotationSystem):
     get_interval : Interval
         Get the interval from an interval's notation.
     """
-    @abc.abstractmethod
+    @_abc.abstractmethod
     def __init__(self):
         pass
 
-    @abc.abstractmethod
-    def get_interval(self, notation: str) -> Interval:
+    @_abc.abstractmethod
+    def get_interval(self, notation: str) -> _theory.Interval:
         pass
 
 class QualityNumberSystem(IntervalNotationSystem):
@@ -270,12 +270,12 @@ class QualityNumberSystem(IntervalNotationSystem):
             self.__quality_number_conversion[quality] = number
             self.__quality_number_conversion[quality.title()] = number
 
-        self._valid_notation_pattern = re.compile("(" + "|".join(self.__quality_number_conversion.keys()) + ")")
+        self._valid_notation_pattern = _re.compile("(" + "|".join(self.__quality_number_conversion.keys()) + ")")
 
     def __str__(self):
         return "Quality Number Notation"
 
-    def get_interval(self, notation: str) -> SemitoneInterval:
+    def get_interval(self, notation: str) -> _theory.SemitoneInterval:
         """Get the interval described by quality number notation in semitones.
         
         Parameters
@@ -294,10 +294,10 @@ class QualityNumberSystem(IntervalNotationSystem):
             If the interval notation is invalid.
         """
         if not self.validate_notation(notation):
-            raise NotationError(notation, self)
-        return SemitoneInterval(self.__quality_number_conversion[notation])
+            raise NotationError(notation, str(self))
+        return _theory.SemitoneInterval(self.__quality_number_conversion[notation])
 
-class MusicalSystem(abc.ABC):
+class MusicalSystem(_abc.ABC):
     """Abstract class for musical systems, containing a notation system, tuning system, and pitch standard.
 
     Attributes
@@ -325,7 +325,7 @@ class MusicalSystem(abc.ABC):
         Create a specific chord or generic SemitoneChord. The original root of the chord will be ignored if note is None. If the root of the chord and note do not match, the chord will be transposed to note.
     """
     
-    @abc.abstractmethod
+    @_abc.abstractmethod
     def __init__(self):
         pass
 
@@ -346,16 +346,16 @@ class MusicalSystem(abc.ABC):
         return (self._pitch_standard_notation, self._pitch_standard_frequency)
 
     @property
-    def valid_chord_pattern(self) -> re.Pattern:
+    def valid_chord_pattern(self) -> _re.Pattern:
         return self._valid_chord_pattern
 
-    @abc.abstractmethod
+    @_abc.abstractmethod
     def get_frequency(self, notation):
         # not truly abstract
         if not self.note_notation_system.validate_notation(notation):
             raise NotationError(self.note_notation_system, self.tuning_system)
 
-    def create_note(self, notation: str) -> Note:
+    def create_note(self, notation: str) -> _theory.Note:
         """Create a note based on its notation.
 
         Parameters
@@ -368,9 +368,9 @@ class MusicalSystem(abc.ABC):
         Note
             The note, with the associated frequency.
         """
-        return Note(self.get_frequency(notation))
+        return _theory.Note(self.get_frequency(notation))
 
-    def create_scale(self, scale: Scale, note: Note | str) -> list[Note]:
+    def create_scale(self, scale: _theory.Scale, note: _theory.Note | str) -> list[_theory.Note]:
         """Create a scale based on a starting note's notation and the scale structure.
 
         Parameters
@@ -391,10 +391,10 @@ class MusicalSystem(abc.ABC):
         for delta_unit in scale.increment:
             frequency_ratio = self.tuning_system.get_frequency_ratio(delta_unit)
             prev_note = scale_instance[-1]
-            scale_instance.append(Note(prev_note.frequency * frequency_ratio))
+            scale_instance.append(_theory.Note(prev_note.frequency * frequency_ratio))
         return scale_instance
 
-    def create_interval(self, interval: SemitoneInterval | str, note: Note | str = None) -> list[list[Note]] | SemitoneInterval:
+    def create_interval(self, interval: _theory.SemitoneInterval | str, note: _theory.Note | str = None) -> list[list[_theory.Note]] | _theory.SemitoneInterval:
         """Create an interval based on a tonic note's notation and the interval structure.
 
         Parameters
@@ -419,10 +419,10 @@ class MusicalSystem(abc.ABC):
         else:
             tonic = note
         
-        interval_instance = [[tonic], [Note(tonic.frequency * self.tuning_system.get_frequency_ratio(interval.relation))]]
+        interval_instance = [[tonic], [_theory.Note(tonic.frequency * self.tuning_system.get_frequency_ratio(interval.relation))]]
         return interval_instance
 
-    def create_chord(self, chord: SemitoneChord | str, note: Note | str = None) -> list[list[Note]] | SemitoneChord:
+    def create_chord(self, chord: _theory.SemitoneChord | str, note: _theory.Note | str = None) -> list[list[_theory.Note]] | _theory.SemitoneChord:
         """Create a chord based on a tonic note's notation and the chord structure.
 
         Parameters
@@ -452,7 +452,7 @@ class MusicalSystem(abc.ABC):
 
         chord_instance = [[tonic]]
         for interval in chord.intervals:
-            chord_instance.append([Note(tonic.frequency * self.tuning_system.get_frequency_ratio(interval.relation))])
+            chord_instance.append([_theory.Note(tonic.frequency * self.tuning_system.get_frequency_ratio(interval.relation))])
         return chord_instance
 
 class WesternClassicalSystem(MusicalSystem):
@@ -526,15 +526,3 @@ class PtolemaicSystem(MusicalSystem):
         pitch_standard_notation, pitch_standard_frequency = self.pitch_standard
         delta_half_step = self.note_notation_system.get_interval_between(pitch_standard_notation, notation).relation
         return pitch_standard_frequency * self.tuning_system.get_frequency_ratio(delta_half_step)
-
-if __name__ == "__main__":
-    WCS = WesternClassicalSystem()
-    PS = PtolemaicSystem()
-
-    print(WCS.create_note("Csharp4"))
-    print(PS.create_note("Csharp4"))
-    print(WCS.create_note("Csharp5"))
-    print(PS.create_note("Csharp5"))
-
-    print(WCS.create_interval("A4", "P5"))
-    print(PS.create_interval("A4", "P5"))

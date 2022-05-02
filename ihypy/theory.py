@@ -1,4 +1,4 @@
-import abc
+import abc as _abc
 
 class IntervalLengthError(Exception):
     """Exception raised for errors in lengths of intervals.
@@ -38,10 +38,10 @@ class Note:
 
 # TODO: Create musical units
 
-class Piece(abc.ABC):
+class Piece(_abc.ABC):
     """Abstract class for collections of relationships of notes."""
     
-    @abc.abstractmethod
+    @_abc.abstractmethod
     def __init__(self):
         pass
 
@@ -118,7 +118,7 @@ class NaturalMinorScale(AeolianScale):
     def __init__(self, octaves : int = 1):
         super().__init__(octaves)
 
-class Interval(abc.ABC):
+class Interval(_abc.ABC):
     """An abstract class for intervals.
     
     Attributes
@@ -129,7 +129,7 @@ class Interval(abc.ABC):
         The unit for the relation.
     """
 
-    @abc.abstractmethod
+    @_abc.abstractmethod
     def __init__(self):
         pass
 
@@ -195,7 +195,7 @@ class PerfectFifth(SemitoneInterval):
 # TODO: define the intervals under https://en.wikipedia.org/wiki/Interval_(music)#Main_intervals
 # TODO: have an instrument be able to play a chord
 
-class Chord(abc.ABC):
+class Chord(_abc.ABC):
     """An abstract class describing a chord.
     
     Attributes
@@ -204,7 +204,7 @@ class Chord(abc.ABC):
         The list of intervals from the tonic. The intervals should be sorted in order of lowest interval to highest interval. Do not include the unison.
     """
 
-    @abc.abstractmethod
+    @_abc.abstractmethod
     def __init__(self):
         pass
 
@@ -239,8 +239,3 @@ class MajorTriad(SemitoneChord):
 
 # TODO: define arpeggios to be consistent with chords
 # TODO: define chord dictionary for consistency and interpretation
-
-if __name__ == "__main__":
-
-    major_triad = MajorTriad()
-    print(major_triad)

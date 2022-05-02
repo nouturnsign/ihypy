@@ -1,9 +1,9 @@
-import abc
-from pydub import AudioSegment, playback
+import abc as _abc
+from pydub import AudioSegment as _AudioSegment, playback as _playback
 
-from .theory import *
+from . import theory as _theory
 
-class Instrument(abc.ABC):
+class Instrument(_abc.ABC):
     """Abstract class for instruments.
 
     Attributes
@@ -23,23 +23,23 @@ class Instrument(abc.ABC):
         Play a list of notes as a scale for roughly duration number of milliseconds.
     """
 
-    @abc.abstractmethod
+    @_abc.abstractmethod
     def __init__(self):
         pass
 
     @property
-    def base_sound(self) -> AudioSegment:
+    def base_sound(self) -> _AudioSegment:
         return self._base_sound
 
     @property
     def base_frequency(self) -> float:
         return self._base_frequency
 
-    @abc.abstractmethod
+    @_abc.abstractmethod
     def __str__(self):
         pass
 
-    def __get_audio(self, frequency: int | float, duration: int = 1000) -> AudioSegment:
+    def __get_audio(self, frequency: int | float, duration: int = 1000) -> _AudioSegment:
         new_sample_rate = int(self._base_sound.frame_rate * frequency / self.base_frequency)
         new_sound = self._base_sound._spawn(self._base_sound.raw_data, overrides={'frame_rate': new_sample_rate})
         new_sound = new_sound.set_frame_rate(44100)
@@ -61,9 +61,9 @@ class Instrument(abc.ABC):
         None
         """
         new_sound = self.__get_audio(frequency, duration)
-        playback.play(new_sound)
+        _playback.play(new_sound)
 
-    def play_note(self, note: Note, duration: int = 1000) -> None:
+    def play_note(self, note: _theory.Note, duration: int = 1000) -> None:
         """Play the given note, generated using the timbre of the instrument.
         
         Parameters
@@ -79,7 +79,7 @@ class Instrument(abc.ABC):
         """
         self.play_frequency(note.frequency, duration)
 
-    def play_scale(self, scale: list[Note], duration: int = 10000) -> None:
+    def play_scale(self, scale: list[_theory.Note], duration: int = 10000) -> None:
         """Play the given instance of a scale of notes, generated using the timbre of the instrument.
         
         Parameters
@@ -95,7 +95,7 @@ class Instrument(abc.ABC):
         """
         note_duration = duration // len(scale)
         new_sound = sum(self.__get_audio(note.frequency, note_duration) for note in scale)
-        playback.play(new_sound)
+        _playback.play(new_sound)
 
 class Piano(Instrument):
     """A generated piano from an actual middle C.
@@ -106,7 +106,7 @@ class Piano(Instrument):
     """
 
     def __init__(self):
-        self._base_sound = AudioSegment.from_file('instrument_audio_clips/piano-C4.wav', format="wav")
+        self._base_sound = _AudioSegment.from_file('instrument_audio_clips/piano-C4.wav', format="wav")
         self._base_frequency = 262
 
     def __str__(self):
@@ -121,7 +121,7 @@ class Trumpet(Instrument):
     """
 
     def __init__(self):
-        self._base_sound = AudioSegment.from_file('instrument_audio_clips/trumpet-C4.wav', format="wav")
+        self._base_sound = _AudioSegment.from_file('instrument_audio_clips/trumpet-C4.wav', format="wav")
         self._base_frequency = 262
 
     def __str__(self):
@@ -136,7 +136,7 @@ class Violin(Instrument):
     """
 
     def __init__(self):
-        self._base_sound = AudioSegment.from_file('instrument_audio_clips/violin-C4.wav', format="wav")
+        self._base_sound = _AudioSegment.from_file('instrument_audio_clips/violin-C4.wav', format="wav")
         self._base_frequency = 262
 
     def __str__(self):
@@ -151,21 +151,8 @@ class Flute(Instrument):
     """
 
     def __init__(self):
-        self._base_sound = AudioSegment.from_file('instrument_audio_clips/flute-C4.wav', format="wav")
+        self._base_sound = _AudioSegment.from_file('instrument_audio_clips/flute-C4.wav', format="wav")
         self._base_frequency = 262
     
     def __str__(self):
         return "Flute"
-
-if __name__ == "__main__":
-    piano = Piano()
-    piano.play_frequency(440)
-
-    trumpet = Trumpet()
-    trumpet.play_frequency(440)
-
-    violin = Violin()
-    violin.play_frequency(440)
-
-    flute = Flute()
-    flute.play_frequency(440)
