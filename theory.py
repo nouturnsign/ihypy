@@ -135,7 +135,7 @@ class Interval(abc.ABC):
 class SemitoneInterval(Interval):
     """An interval, in terms of absolute semitones."""
 
-    def __init__(self, semitones):
+    def __init__(self, semitones: int):
         self._relation = semitones
         self._unit = "semitones"
 
