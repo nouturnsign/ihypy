@@ -25,6 +25,8 @@ class Instrument(_abc.ABC):
         Play a list of singletons containing notes as an arpeggio for roughly duration number of milliseconds.
     play_chord(chord: list[list[Note]], duration: int = 10000) -> None
         Play a list of singletons containing notes as a chord for roughly duration number of milliseconds.
+    play_interval(interval: list[list[Note]], duration: int = 10000) -> None
+        Alias of play_chord for intervals.
     """
 
     @_abc.abstractmethod
@@ -139,6 +141,9 @@ class Instrument(_abc.ABC):
         for i in range(1, len(chord)):
             new_sound *= self.__get_audio(chord[i][0].frequency, duration)
         _playback.play(new_sound)
+
+    def play_interval(self, interval: list[list[_theory.Note]], duration: int = 1000) -> None:
+        self.play_chord(interval, duration)
 
 class Piano(Instrument):
     """A generated piano from an actual middle C.
