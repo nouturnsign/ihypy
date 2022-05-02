@@ -23,7 +23,8 @@ class Instrument(_abc.ABC):
         Play a list of notes as a scale for roughly duration number of milliseconds.
     play_arpeggio(chord: list[list[Note]], duration: int = 10000) -> None
         Play a list of singletons containing notes as an arpeggio for roughly duration number of milliseconds.
-    
+    play_chord(chord: list[list[Note]], duration: int = 10000) -> None
+        Play a list of singletons containing notes as a chord for roughly duration number of milliseconds.
     """
 
     @_abc.abstractmethod

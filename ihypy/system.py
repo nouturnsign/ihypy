@@ -323,6 +323,10 @@ class MusicalSystem(_abc.ABC):
         Create a specific interval or generic SemitoneInterval.
     create_chord(chord: SemitoneChord | str, note: Note | str = None) -> list[list[Note]] | SemitoneChord
         Create a specific chord or generic SemitoneChord. The original root of the chord will be ignored if note is None. If the root of the chord and note do not match, the chord will be transposed to note.
+
+    Notes
+    -----
+    With the exception of create_note, create_... methods have a corresponding _create_... method for a unit of measurement, such as interval. This allows for multiple musical systems to know how to create a chord similarly.
     """
     
     @_abc.abstractmethod

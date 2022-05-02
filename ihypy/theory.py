@@ -160,38 +160,170 @@ class SemitoneInterval(Interval):
         self._unit = "semitones"
 
     def __add__(self, other):
-        # e.g. SemitoneInterval(2) + SemitoneInterval(3) = SemitoneInterval(5)
-        # TODO: assert a valid sum
+        if not issubclass(other, self.__class__):
+            raise TypeError(f"{self} and {other} do not have the same units. Do not add intervals with different units.")
         return SemitoneInterval(self.relation + other.relation)
 
-    def __mul__(self, semitones):
-        # e.g. SemitoneInterval(2) * 3 = SemitoneInterval(6)
-        # TODO: assert a valid product
-        return SemitoneInterval(self.relation * semitones)
+    def __mul__(self, other):
+        if not isinstance(other, int):
+            raise IntervalLengthError(other, "semitones")
+        return SemitoneInterval(self.relation * other)
 
-    def __rmul__(self, semitones):
-        return self.__mul__(semitones)
+    def __rmul__(self, other):
+        return self.__mul__(other)
 
-class Semitone(SemitoneInterval):
-    """A Western semitone."""
+# Minor, major, or perfect intervals
+# tritone, and diminished twelfth are defined to complete two octaves
 
+class MinorSecond(SemitoneInterval):
+    """A Western minor second."""
     def __init__(self):
         super().__init__(1)
 
+class MajorSecond(SemitoneInterval):
+    """A Western major second."""
+    def __init__(self):
+        super().__init__(2)
+
+class MinorThird(SemitoneInterval):
+    """A Western minor third."""
+    def __init__(self):
+        super().__init__(3)
+
 class MajorThird(SemitoneInterval):
     """A Western major third."""
-
     def __init__(self):
         super().__init__(4)
 
+class PerfectFourth(SemitoneInterval):
+    """A Western perfect fourth."""
+    def __init__(self):
+        super().__init__(5)
+
+class Tritone(SemitoneInterval):
+    """A Western tritone."""
+    def __init__(self):
+        super().__init__(6)
+
 class PerfectFifth(SemitoneInterval):
     """A Western perfect fifth."""
-
     def __init__(self):
         super().__init__(7)
 
+class MinorSixth(SemitoneInterval):
+    """A Western minor sixth."""
+    def __init__(self):
+        super().__init__(8)
+
+class MajorSixth(SemitoneInterval):
+    """A Western major sixth."""
+    def __init__(self):
+        super().__init__(9)
+
+class MinorSeventh(SemitoneInterval):
+    """A Western minor seventh."""
+    def __init__(self):
+        super().__init__(10)
+
+class MajorSeventh(SemitoneInterval):
+    """A Western major seventh."""
+    def __init__(self):
+        super().__init__(11)
+
+class PerfectOctave(SemitoneInterval):
+    """A Western perfect octave."""
+    def __init__(self):
+        super().__init__(12)
+
+class MinorNinth(SemitoneInterval):
+    """A Western minor ninth."""
+    def __init__(self):
+        super().__init__(13)
+
+class MajorNinth(SemitoneInterval):
+    """A Western major ninth."""
+    def __init__(self):
+        super().__init__(14)
+
+class MinorTenth(SemitoneInterval):
+    """A Western minor tenth."""
+    def __init__(self):
+        super().__init__(15)
+
+class MajorTenth(SemitoneInterval):
+    """A Western major tenth."""
+    def __init__(self):
+        super().__init__(16)
+
+class PerfectEleventh(SemitoneInterval):
+    """A Western perfect eleventh."""
+    def __init__(self):
+        super().__init__(17)
+
+class DiminishedTwelfth(SemitoneInterval):
+    """A Western diminished twelfth, or augmented eleventh."""
+    def __init__(self):
+        super().__init__(18)
+
+class PerfectTwelfth(SemitoneInterval):
+    """A Western perfect twelfth."""
+    def __init__(self):
+        super().__init__(19)
+
+class MinorThirteenth(SemitoneInterval):
+    """A Western minor thirteenth."""
+    def __init__(self):
+        super().__init__(20)
+
+class MajorThirteenth(SemitoneInterval):
+    """A Western major tenth."""
+    def __init__(self):
+        super().__init__(21)
+
+class MinorFourteenth(SemitoneInterval):
+    """A Western minor fourteenth."""
+    def __init__(self):
+        super().__init__(22)
+
+class MajorFourteenth(SemitoneInterval):
+    """A Western major fourteenth."""
+    def __init__(self):
+        super().__init__(23)
+
+class PerfectFifteenth(SemitoneInterval):
+    """A Western perfect fifteenth."""
+    def __init__(self):
+        super().__init__(24)
+
+# Augmented or diminished intervals and alternative names
+
+AugmentedUnison = Semitone = HalfTone = HalfStep = MinorSecond
+DiminishedThird = Tone = WholeTone = WholeStep = MajorSecond
+AugmentedSecond = Trisemitone = MinorThird
+DiminishedFourth = MajorThird
+AugmentedThird = PerfectFourth
+DiminishedFifth = AugmentedFourth = Tritone
+DiminishedSixth = PerfectFifth
+AugmentedFifth = MinorSixth
+DiminishedSeventh = MajorSixth
+AugmentedSixth = MinorSeventh
+DiminishedOctave = MajorSeventh
+AugmentedSeventh = DiminishedNinth = PerfectOctave
+
+AugmentedOctave = MinorNinth
+DiminishedTenth = MajorNinth
+AugmentedNinth =  MinorTenth
+DiminishedFourth = MajorTenth
+AugmentedThird = PerfectEleventh
+AugmentedEleventh = DiminishedTwelfth
+DiminishedThirteenth = Tritave = PerfectTwelfth
+AugmentedTwelfth = MinorThirteenth
+DiminishedFourteenth = MajorThirteenth
+AugmentedThirteenth = MinorFourteenth
+DiminishedFifteenth = MajorFourteenth
+AugmentedFourteenth = DoubleOctave = PerfectFifteenth
+
 # TODO: define the intervals under https://en.wikipedia.org/wiki/Interval_(music)#Main_intervals
-# TODO: have an instrument be able to play a chord
 
 class Chord(_abc.ABC):
     """An abstract class describing a chord.
