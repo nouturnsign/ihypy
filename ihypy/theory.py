@@ -1,5 +1,23 @@
 import abc
 
+class IntervalLengthError(Exception):
+    """Exception raised for errors in lengths of intervals.
+
+    Attributes
+    ----------
+    value : int | float
+        The faulty number associated with the interval.
+    interval : str
+        The interval, expressed as a string.
+    """
+
+    def __init__(self, value: int | float, interval: str):
+        self.value = value
+        self.interval = interval
+
+    def __str__(self):
+        return f"{self.value} is not a valid number of {self.interval} intervals."
+
 class Note:
     """A musical note, described by its frequency.
 
@@ -18,6 +36,8 @@ class Note:
     def __repr__(self):
         return str(self)
 
+# TODO: Create musical units
+
 class Piece(abc.ABC):
     """Abstract class for collections of notes."""
     
@@ -32,57 +52,62 @@ class Scale(Piece):
     ----------
     increment : list[float]
         The list of increments to get to the period of the scale.
+    units : str
+        The unit for the increment.
     """
-
-    def __init__(self):
-        pass
 
     @property
     def increment(self) -> list[float]:
         return self._increment
 
-class IonianScale(Scale):
+    @property
+    def units(self) -> str:
+        return self._units
+
+class SemitoneScale(Scale):
+    """Base class for semitone-based scales."""
+
+    def __init__(self, increment, octaves):
+        if not isinstance(octaves, int) or octaves < 1:
+            raise IntervalLengthError(octaves, "octave")
+        self._increment = increment * octaves
+        self._unit = "semitones"
+
+class IonianScale(SemitoneScale):
     """One of the seven modern modes, commonly referred to as the major scale."""
 
     def __init__(self, octaves : int = 1):
-        # TODO: assert that there is a valid number of octaves
-        self._increment = [2, 2, 1, 2, 2, 2, 1] * octaves # halfsteps between each note
+        super().__init__([2, 2, 1, 2, 2, 2, 1], octaves)
 
-class DorianScale(Scale):
+class DorianScale(SemitoneScale):
     """One of the seven modern modes."""
     def __init__(self, octaves : int = 1):
-        # TODO: assert that there is a valid number of octaves
-        self._increment = [2, 1, 2, 2, 2, 1, 2] * octaves # halfsteps between each note
+        super().__init__([2, 1, 2, 2, 2, 1, 2], octaves)
 
-class PhrygianScale(Scale):
+class PhrygianScale(SemitoneScale):
     """One of the seven modern modes."""
     def __init__(self, octaves : int = 1):
-        # TODO: assert that there is a valid number of octaves
-        self._increment = [1, 2, 2, 2, 1, 2, 2] * octaves # halfsteps between each note
+        super().__init__([1, 2, 2, 2, 1, 2, 2], octaves)
 
-class LydianScale(Scale):
+class LydianScale(SemitoneScale):
     """One of the seven modern modes."""
     def __init__(self, octaves : int = 1):
-        # TODO: assert that there is a valid number of octaves
-        self._increment = [2, 2, 2, 1, 2, 2, 1] * octaves # halfsteps between each note
+        super().__init__([2, 2, 2, 1, 2, 2, 1], octaves)
 
-class MixolydianScale(Scale):
+class MixolydianScale(SemitoneScale):
     """One of the seven modern modes."""
     def __init__(self, octaves : int = 1):
-        # TODO: assert that there is a valid number of octaves
-        self._increment = [2, 2, 1, 2, 2, 1, 2] * octaves # halfsteps between each note
+        super().__init__([2, 2, 1, 2, 2, 1, 2], octaves)
 
-class AeolianScale(Scale):
+class AeolianScale(SemitoneScale):
     """One of the modern modes, commonly referred to as the natural minor scale."""
     def __init__(self, octaves : int = 1):
-        # TODO: assert that there is a valid number of octaves
-        self._increment = [2, 1, 2, 2, 1, 2, 2] * octaves # halfsteps between each note
+        super().__init__([2, 1, 2, 2, 1, 2, 2], octaves)
 
-class LocrianScale(Scale):
+class LocrianScale(SemitoneScale):
     """One of the seven modern modes."""
     def __init__(self, octaves : int = 1):
-        # TODO: assert that there is a valid number of octaves
-        self._increment = [1, 2, 2, 1, 2, 2, 2] * octaves # halfsteps between each note
+        super().__init__([1, 2, 2, 1, 2, 2, 2], octaves)
 
 class MajorScale(IonianScale):
     """A standard Western major scale."""
