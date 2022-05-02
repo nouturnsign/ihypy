@@ -38,7 +38,7 @@ class Scale(Piece):
         pass
 
     @property
-    def increment(self):
+    def increment(self) -> list[float]:
         return self._increment
 
 class IonianScale(Scale):
@@ -112,11 +112,11 @@ class Interval(abc.ABC):
         pass
 
     @property
-    def relation(self):
+    def relation(self) -> int | float:
         return self._relation
 
     @property
-    def unit(self):
+    def unit(self) -> str:
         return self._unit
 
     def __str__(self):
@@ -187,7 +187,7 @@ class Chord(abc.ABC):
         pass
 
     @property
-    def intervals(self):
+    def intervals(self) -> list[Interval]:
         return self._intervals
 
     def __str__(self):

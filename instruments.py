@@ -10,11 +10,11 @@ class Instrument(abc.ABC):
         pass
 
     @property
-    def base_sound(self):
+    def base_sound(self) -> AudioSegment:
         return self._base_sound
 
     @property
-    def base_frequency(self):
+    def base_frequency(self) -> float:
         return self._base_frequency
 
     @abc.abstractmethod
@@ -89,7 +89,7 @@ class Piano(Instrument):
 
     def __init__(self):
         self._base_sound = AudioSegment.from_file('instrument_audio_clips/piano-C4.wav', format="wav")
-        self._base_frequency = 261
+        self._base_frequency = 262
         super().__init__()
 
     def __str__(self):
@@ -105,7 +105,7 @@ class Trumpet(Instrument):
 
     def __init__(self):
         self._base_sound = AudioSegment.from_file('instrument_audio_clips/trumpet-C4.wav', format="wav")
-        self._base_frequency = 261
+        self._base_frequency = 262
         super().__init__()
 
     def __str__(self):
@@ -121,7 +121,7 @@ class Violin(Instrument):
 
     def __init__(self):
         self._base_sound = AudioSegment.from_file('instrument_audio_clips/violin-C4.wav', format="wav")
-        self._base_frequency = 261
+        self._base_frequency = 262
         super().__init__()
 
     def __str__(self):
@@ -137,7 +137,7 @@ class Flute(Instrument):
 
     def __init__(self):
         self._base_sound = AudioSegment.from_file('instrument_audio_clips/flute-C4.wav', format="wav")
-        self._base_frequency = 261
+        self._base_frequency = 262
         super().__init__()
     
     def __str__(self):

@@ -223,6 +223,7 @@ class QualityNumberSystem(IntervalNotationSystem):
 
     def __init__(self):
 
+        # define interval notation
         self.__quality_conversion_perfect = {"diminished": -1, "perfect": 0, "augmented": 1}
         self.__quality_conversion_perfect_abbrev = {"d": -1, "P": 0, "A": 1}
         self.__quality_conversion_imperfect = {"diminished": -1.5, "minor": -0.5, "major": 0.5, "augmented": 1.5}
@@ -311,14 +312,19 @@ class MusicalSystem(abc.ABC):
         The tuning system to use.
     pitch_standard : tuple[str, int | float]
         The pitch tuned to an absolute frequency.
+    valid_chord_pattern : re.Pattern
+        The regular expression to fully match a chord's notation.
     
     Methods
     -------
     create_note(notation: str) -> Note
         Create a note with the given notation based on the musical system's notation_system and tuning_system.
-
-    create_scale(notation: str, scale: Scale) -> list[Note]
+    create_scale(scale: Scale, notation: str) -> list[Note]
         Create a list of notes starting from the given notation based on the scale increments and musical system's notation_system and tuning_system.
+    create_interval(interval: SemitoneInterval | str, note: Note | str = None) -> list[list[Note]] | SemitoneInterval
+        Create a specific interval or generic SemitoneInterval.
+    create_chord(chord: SemitoneChord | str, note: Note | str = None) -> list[list[Note]] | SemitoneChord
+        Create a specific chord or generic SemitoneChord. The original root of the chord will be ignored if note is None. If the root of the chord and note do not match, the chord will be transposed to note.
     """
     
     @abc.abstractmethod
@@ -341,6 +347,10 @@ class MusicalSystem(abc.ABC):
     def pitch_standard(self) -> tuple[str, int | float]:
         return (self._pitch_standard_notation, self._pitch_standard_frequency)
 
+    @property
+    def valid_chord_pattern(self) -> re.Pattern:
+        return self._valid_chord_pattern
+
     @abc.abstractmethod
     def get_frequency(self, notation):
         # not truly abstract
@@ -362,48 +372,90 @@ class MusicalSystem(abc.ABC):
         """
         return Note(self.get_frequency(notation))
 
-    def create_scale(self, notation: str, scale: Scale) -> list[Note]:
+    def create_scale(self, scale: Scale, note: Note | str) -> list[Note]:
         """Create a scale based on a starting note's notation and the scale structure.
 
         Parameters
         ----------
-        notation : str
-            The notation as a string.
         scale : Scale
             The structure of the scale.
+        note : Note | str
+            The notation as a string, or the note itself.
     
         Returns
         -------
         list[Note]
             A list of notes.
         """
-        scale_instance = [self.create_note(notation)]
+        if isinstance(note, str):
+            note = self.create_note(note)
+        scale_instance = [note]
         for delta_unit in scale.increment:
             frequency_ratio = self.tuning_system.get_frequency_ratio(delta_unit)
             prev_note = scale_instance[-1]
             scale_instance.append(Note(prev_note.frequency * frequency_ratio))
         return scale_instance
 
-    def create_interval(self, note: str, interval: SemitoneInterval | str) -> list[list[Note]]:
+    def create_interval(self, interval: SemitoneInterval | str, note: Note | str = None) -> list[list[Note]] | SemitoneInterval:
         """Create an interval based on a tonic note's notation and the interval structure.
 
         Parameters
         ----------
-        note : str
-            The tonic note's notation as a string.
-        interval : str | SemitoneInterval
+        interval : SemitoneInterval | str
             The structure of the scale. Either a string or SemitoneInterval.
+        note : Note | str = None
+            The tonic note's notation as a Note or string. If not specified, a generic interval will be returned.
     
         Returns
         -------
-        list[list[Note]]
-            A list of singletons containing one note.
+        list[list[Note]] | SemitoneInterval
+            A list of singletons containing one note, or a SemitoneInterval.
         """
         if isinstance(interval, str):
             interval = self.interval_notation_system.get_interval(interval)
-        tonic = self.create_note(note)
+        if note is None:
+            return interval
+
+        if isinstance(note, str):
+            tonic = self.create_note(note)
+        else:
+            tonic = note
+        
         interval_instance = [[tonic], [Note(tonic.frequency * self.tuning_system.get_frequency_ratio(interval.relation))]]
         return interval_instance
+
+    def create_chord(self, chord: SemitoneChord | str, note: Note | str = None) -> list[list[Note]] | SemitoneChord:
+        """Create a chord based on a tonic note's notation and the chord structure.
+
+        Parameters
+        ----------
+        chord : SemitoneChord | str
+            The structure of the chord. Either a string or SemitoneInterval.
+        note : Note | str = None
+            The tonic note's notation as a Note or string. If not specified, a generic interval will be returned.
+    
+        Returns
+        -------
+        list[list[Note]] | SemitoneChord
+            A list of singletons containing one note, or a SemitoneChord.
+        """
+        
+        if isinstance(chord, str):
+            # TODO: regular expression stuff here
+            pass
+        if note is None:
+            # chord should be an actual SemitoneChord by now
+            return chord
+
+        if isinstance(note, str):
+            tonic = self.create_note(note)
+        else:
+            tonic = note
+
+        chord_instance = [[tonic]]
+        for interval in chord.intervals:
+            chord_instance.append([Note(tonic.frequency * self.tuning_system.get_frequency_ratio(interval.relation))])
+        return chord_instance
 
 class WesternClassicalSystem(MusicalSystem):
     """A standard Western classical system, using IPN and 12-TET.
@@ -420,6 +472,8 @@ class WesternClassicalSystem(MusicalSystem):
         self._tuning_system = TwelveToneEqualTemperament()
         self._pitch_standard_notation = "A4"
         self._pitch_standard_frequency = 440
+        # TODO: fix this
+        self._valid_chord_pattern = ""
 
     def get_frequency(self, notation: str) -> float:
         """Get the 12-TET frequency of the IPN notation.
@@ -454,6 +508,8 @@ class PtolemaicSystem(MusicalSystem):
         self._tuning_system = FiveLimitTuning()
         self._pitch_standard_notation = "A4"
         self._pitch_standard_frequency = 440
+        # TODO: fix this
+        self._valid_chord_pattern = ""
 
     def get_frequency(self, notation: str) -> float:
         """Get the 5-limit tuning frequency of the IPN notation.
