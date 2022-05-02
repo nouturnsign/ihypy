@@ -4,8 +4,26 @@ from pydub import AudioSegment, playback
 from .theory import *
 
 class Instrument(abc.ABC):
-    """Abstract class for instruments."""
+    """Abstract class for instruments.
 
+    Attributes
+    ----------
+    base_sound: AudioSegment
+        The original audio clip of a single note.
+    base_frequency: float
+        The likely original intended frequency of the note being played in the original audio clip.
+    
+    Methods
+    -------
+    play_frequency(frequency: int | float, duration: int = 1000) -> None
+        Play a frequency on the instrument for duration number of milliseconds.
+    play_note(note: Note, duration: int = 1000) -> None
+        Play a note on the instrument for duration number of milliseconds.
+    play_scale(scale: list[Note], duration: int = 10000) -> None
+        Play a list of notes as a scale for roughly duration number of milliseconds.
+    """
+
+    @abc.abstractmethod
     def __init__(self):
         pass
 
@@ -90,7 +108,6 @@ class Piano(Instrument):
     def __init__(self):
         self._base_sound = AudioSegment.from_file('instrument_audio_clips/piano-C4.wav', format="wav")
         self._base_frequency = 262
-        super().__init__()
 
     def __str__(self):
         return "Piano"
@@ -106,7 +123,6 @@ class Trumpet(Instrument):
     def __init__(self):
         self._base_sound = AudioSegment.from_file('instrument_audio_clips/trumpet-C4.wav', format="wav")
         self._base_frequency = 262
-        super().__init__()
 
     def __str__(self):
         return "Trumpet"
@@ -122,7 +138,6 @@ class Violin(Instrument):
     def __init__(self):
         self._base_sound = AudioSegment.from_file('instrument_audio_clips/violin-C4.wav', format="wav")
         self._base_frequency = 262
-        super().__init__()
 
     def __str__(self):
         return "Violin"
@@ -138,7 +153,6 @@ class Flute(Instrument):
     def __init__(self):
         self._base_sound = AudioSegment.from_file('instrument_audio_clips/flute-C4.wav', format="wav")
         self._base_frequency = 262
-        super().__init__()
     
     def __str__(self):
         return "Flute"
