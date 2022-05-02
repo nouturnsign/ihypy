@@ -490,7 +490,7 @@ class MusicalSystem(_abc.ABC):
         
         # pick a random octave, adjust to force it to go down
         octave = "4"
-        interval = self.note_notation_system.get_interval_between(root + octave, slash + octave)
+        interval = self.note_notation_system.get_interval_between(root + octave, slash[1:] + octave)
         if interval.relation > 0:
             interval = _theory.SemitoneInterval(interval.relation - 12)
         return interval
@@ -527,15 +527,15 @@ class MusicalSystem(_abc.ABC):
 
             # half-dim
             elif ("halfdim" in extension or "ø" in extension):
-                intervals.append(_theory.MinorSeventh(10))
-                intervals.append(_theory.DiminishedFifth(6))
-                intervals.append(_theory.MinorThird(3))
+                intervals.append(_theory.MinorSeventh())
+                intervals.append(_theory.DiminishedFifth())
+                intervals.append(_theory.MinorThird())
 
             # dim
             elif ("dim" in extension or "o" in extension or "°" in extension):
-                intervals.append(_theory.DiminishedSeventh(9))
-                intervals.append(_theory.DiminishedFifth(6))
-                intervals.append(_theory.MinorThird(3))
+                intervals.append(_theory.DiminishedSeventh())
+                intervals.append(_theory.DiminishedFifth())
+                intervals.append(_theory.MinorThird())
 
             # major
             elif ("M" in extension or "∆" in extension):
@@ -575,7 +575,7 @@ class MusicalSystem(_abc.ABC):
 
             # major
             else:
-                intervals.append(_theory.PerfectFifth(7))
+                intervals.append(_theory.PerfectFifth())
                 intervals.append(_theory.MajorThird())
 
         return intervals

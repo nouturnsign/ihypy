@@ -7,7 +7,7 @@ piano = instrument.Piano()
 print(WCS.create_chord("C"))
 
 c_minor_scale_1_octave = WCS.create_scale(theory.NaturalMinorScale(octaves = 1), "C3")
-g_dominant_altered_chord = WCS.create_chord("G7f139", "G2")
+g_dominant_altered_chord = WCS.create_chord("G7f139/D", "G2")
 piano.play_scale(c_minor_scale_1_octave, 6000)
 piano.play_arpeggio(g_dominant_altered_chord, 2000)
 piano.play_chord(g_dominant_altered_chord)
