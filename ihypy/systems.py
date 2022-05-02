@@ -1,9 +1,7 @@
-# sticking with classical Western notation for now
-
 import abc
 import re
 
-from theory import *
+from .theory import *
 
 class NotationError(Exception):
     """Exception raised for errors in string representations of musical notation.

@@ -1,7 +1,7 @@
 import abc
 from pydub import AudioSegment, playback
 
-from theory import *
+from .theory import *
 
 class Instrument(abc.ABC):
     """Abstract class for instruments."""
