@@ -1,1 +1,1 @@
-__all__ = ["systems", "theory", "instruments"]
+__all__ = ["system", "theory", "instrument"]
