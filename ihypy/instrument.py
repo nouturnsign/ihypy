@@ -46,10 +46,13 @@ class Instrument(_abc.ABC):
         pass
 
     def __get_audio(self, frequency: int | float, duration: int = 1000) -> _AudioSegment:
-        new_sample_rate = int(self._base_sound.frame_rate * frequency / self.base_frequency)
-        new_sound = self._base_sound._spawn(self._base_sound.raw_data, overrides={'frame_rate': new_sample_rate})
-        new_sound = new_sound.set_frame_rate(44100)
+        new_sample_rate = int(self.base_sound.frame_rate * frequency / self.base_frequency)
+        new_sound = self.base_sound._spawn(self.base_sound.raw_data, overrides={'frame_rate': new_sample_rate})
+        new_sound = new_sound.set_frame_rate(self.base_sound.frame_rate)
         new_sound = new_sound[:duration]
+        remaining = duration - len(new_sound)
+        if remaining > 0:
+            new_sound += _AudioSegment.silent(remaining)
         return new_sound
 
     def play_frequency(self, frequency: int | float, duration: int = 1000) -> None:
@@ -154,7 +157,7 @@ class Piano(Instrument):
     """
 
     def __init__(self):
-        self._base_sound = _AudioSegment.from_file('instrument_audio_clips/piano-C4.wav', format="wav")
+        self._base_sound = _AudioSegment.from_wav('instrument_audio_clips/piano-C4.wav')
         self._base_frequency = 262
 
     def __str__(self):
@@ -169,7 +172,7 @@ class Trumpet(Instrument):
     """
 
     def __init__(self):
-        self._base_sound = _AudioSegment.from_file('instrument_audio_clips/trumpet-C4.wav', format="wav")
+        self._base_sound = _AudioSegment.from_wav('instrument_audio_clips/trumpet-C4.wav')
         self._base_frequency = 262
 
     def __str__(self):
@@ -184,7 +187,7 @@ class Violin(Instrument):
     """
 
     def __init__(self):
-        self._base_sound = _AudioSegment.from_file('instrument_audio_clips/violin-C4.wav', format="wav")
+        self._base_sound = _AudioSegment.from_wav('instrument_audio_clips/violin-C4.wav')
         self._base_frequency = 262
 
     def __str__(self):
@@ -199,8 +202,38 @@ class Flute(Instrument):
     """
 
     def __init__(self):
-        self._base_sound = _AudioSegment.from_file('instrument_audio_clips/flute-C4.wav', format="wav")
+        self._base_sound = _AudioSegment.from_wav('instrument_audio_clips/flute-C4.wav')
         self._base_frequency = 262
     
     def __str__(self):
         return "Flute"
+
+class Ukulele(Instrument):
+    """A generated ukulele from an actual G#4.
+    
+    Notes
+    -----
+    Audio of G#4 taken from http://musicweb.ucsd.edu/~terbe/172/
+    """
+
+    def __init__(self):
+        self._base_sound = _AudioSegment.from_wav('instrument_audio_clips/ukulele-A4.wav')
+        self._base_frequency = 432
+    
+    def __str__(self):
+        return "Ukulele"
+
+class Cello(Instrument):
+    """A generated cello from an actual C3.
+    
+    Notes
+    -----
+    Audio of C3 taken from http://cd.textfiles.com/sbsw/INSTRMNT/
+    """
+
+    def __init__(self):
+        self._base_sound = _AudioSegment.from_wav('instrument_audio_clips/cello-E2.wav')
+        self._base_frequency = 81
+    
+    def __str__(self):
+        return "Cello"
