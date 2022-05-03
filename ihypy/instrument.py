@@ -209,11 +209,11 @@ class Flute(Instrument):
         return "Flute"
 
 class Ukulele(Instrument):
-    """A generated ukulele from an actual G#4.
+    """A generated ukulele from an actual A4.
     
     Notes
     -----
-    Audio of G#4 taken from http://musicweb.ucsd.edu/~terbe/172/
+    Audio of A4 taken from http://musicweb.ucsd.edu/~terbe/172/
     """
 
     def __init__(self):
