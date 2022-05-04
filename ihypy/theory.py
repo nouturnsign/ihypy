@@ -25,6 +25,17 @@ class Note:
     ----------
     frequency : int | float
         The frequency, expressed in Hz.
+
+    Methods
+    -------
+    transpose(frequency_ratio: int | float) -> Note
+        Transpose the note by a certain frequency ratio.
+    invert(about: Note) -> Note
+        Invert the note about another note.
+
+    Notes
+    -----
+    Treat Notes as immutable.
     """
 
     def __init__(self, frequency: int | float):
@@ -35,6 +46,39 @@ class Note:
 
     def __repr__(self):
         return str(self)
+
+    def transpose(self, frequency_ratio: int | float) -> "Note":
+        """Tranpose the note by a certain frequency ratio.
+        
+        Parameters
+        ----------
+        frequency_ratio: int | float
+            The ratio by which to multiply the current note's frequency. This is the frequency ratio between the desired frequency and current frequency.
+
+        Returns
+        -------
+        Note
+            A new note with the transposed frequency.
+        """
+        return Note(self.frequency * frequency_ratio)
+
+    def invert(self, about: "Note") -> "Note":
+        """Invert about a certain note.
+        
+        Parameters
+        ----------
+        about: Note
+            The note to invert about. 
+
+        Returns
+        -------
+        Note
+            A new note with the inverted frequency.
+        """
+        # frequency ratio of from about to self
+        frequency_ratio = self.frequency / about.frequency
+        # 1 / frequency ratio to go in opposite direction from about
+        return about.transpose(1 / frequency_ratio)
 
 # TODO: Create musical units
 
@@ -365,5 +409,4 @@ class MajorTriad(SemitoneChord):
     def __init__(self):
         super().__init__([MajorThird(), PerfectFifth()])
 
-# TODO: define arpeggios to be consistent with chords
 # TODO: define chord dictionary for consistency and interpretation
