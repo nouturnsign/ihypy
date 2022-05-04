@@ -162,6 +162,11 @@ class NaturalMinorScale(AeolianScale):
     def __init__(self, octaves : int = 1):
         super().__init__(octaves)
 
+class HarmonicMinorScale(SemitoneScale):
+    """A standard Western harmonic minor scale."""
+    def __init__(self, octaves : int = 1):
+        super().__init__([2, 1, 2, 2, 1, 3, 1], octaves)
+
 class Interval(_abc.ABC):
     """An abstract class for intervals.
     
