@@ -1,7 +1,11 @@
 import abc as _abc
+import requests as _requests
+import io as _io
 from pydub import AudioSegment as _AudioSegment, playback as _playback
 
 from . import theory as _theory
+
+AUDIO_CLIPS_PATH = "https://github.com/nouturnsign/ihypy/raw/master/ihypy/instrument_audio_clips/"
 
 class Instrument(_abc.ABC):
     """Abstract class for instruments.
@@ -35,7 +39,11 @@ class Instrument(_abc.ABC):
 
     @property
     def base_sound(self) -> _AudioSegment:
-        return self._base_sound
+        if "_base_audio_segment" not in vars(self):
+            r = _requests.get(AUDIO_CLIPS_PATH + self._base_sound)
+            f = _io.BytesIO(r.content)
+            self._base_audio_segment = _AudioSegment.from_file(f)
+        return self._base_audio_segment
 
     @property
     def base_frequency(self) -> float:
@@ -157,7 +165,7 @@ class Piano(Instrument):
     """
 
     def __init__(self):
-        self._base_sound = _AudioSegment.from_wav('instrument_audio_clips/piano-C4.wav')
+        self._base_sound = 'piano-C4.wav'
         self._base_frequency = 262
 
     def __str__(self):
@@ -172,7 +180,7 @@ class Trumpet(Instrument):
     """
 
     def __init__(self):
-        self._base_sound = _AudioSegment.from_wav('instrument_audio_clips/trumpet-C4.wav')
+        self._base_sound = 'trumpet-C4.wav'
         self._base_frequency = 262
 
     def __str__(self):
@@ -187,7 +195,7 @@ class Violin(Instrument):
     """
 
     def __init__(self):
-        self._base_sound = _AudioSegment.from_wav('instrument_audio_clips/violin-C4.wav')
+        self._base_sound = 'violin-C4.wav'
         self._base_frequency = 262
 
     def __str__(self):
@@ -202,7 +210,7 @@ class Flute(Instrument):
     """
 
     def __init__(self):
-        self._base_sound = _AudioSegment.from_wav('instrument_audio_clips/flute-C4.wav')
+        self._base_sound = 'flute-C4.wav'
         self._base_frequency = 262
     
     def __str__(self):
@@ -217,7 +225,7 @@ class Ukulele(Instrument):
     """
 
     def __init__(self):
-        self._base_sound = _AudioSegment.from_wav('instrument_audio_clips/ukulele-A4.wav')
+        self._base_sound = 'ukulele-A4.wav'
         self._base_frequency = 432
     
     def __str__(self):
@@ -232,7 +240,7 @@ class Cello(Instrument):
     """
 
     def __init__(self):
-        self._base_sound = _AudioSegment.from_wav('instrument_audio_clips/cello-E2.wav')
+        self._base_sound = 'cello-E2.wav'
         self._base_frequency = 81
     
     def __str__(self):
