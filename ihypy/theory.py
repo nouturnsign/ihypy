@@ -114,6 +114,8 @@ class SemitoneScale(Scale):
     def __init__(self, increment: list[float], octaves: int):
         if not isinstance(octaves, int) or octaves < 1:
             raise IntervalLengthError(octaves, "octave")
+        if not sum(increment) == 12:
+            raise IntervalLengthError(sum(increment), "halfsteps in octave")
         self._increment = increment * octaves
         self._unit = "semitones"
 
