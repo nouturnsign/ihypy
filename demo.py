@@ -1,4 +1,7 @@
 from ihypy import *
+from ihypy.system import *
+from ihypy.theory import *
+from ihypy.instrument import *
 
 # ihypy
 WCS = system.WesternClassicalSystem()

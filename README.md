@@ -1,6 +1,10 @@
 # ihypy
 WIP Python musical analysis module
 
+# Install
+`py -m pip install ihypy` for Windows
+`python3 -m pip install ihypy` otherwise
+
 # Description
 Where does the name come from? I wanted something musical that rhymed with py, and Ihy apparently is an Egyptian god of music—more specifically, the ectasy of playing the sistrum. Whether or not that actually rhymes, I am pronouncing the name of this repository as "I Hi Py" as it looks like it should rhyme, and the sistrum's heiroglyph looks cool. 𓏣
 
