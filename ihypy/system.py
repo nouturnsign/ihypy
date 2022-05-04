@@ -135,7 +135,7 @@ class NoteNotationSystem(NotationSystem):
 
     Methods
     -------
-    get_interval_between(self, from_notation: str, to_notation: str) -> Interval
+    get_interval_between(from_notation: str, to_notation: str) -> Interval
         Get the interval between two notes based on their notations.
     """
 
@@ -205,7 +205,7 @@ class IntervalNotationSystem(NotationSystem):
 
     Methods
     -------
-    get_interval : Interval
+    get_interval(notation: str) : Interval
         Get the interval from an interval's notation.
     """
     @_abc.abstractmethod

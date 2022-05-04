@@ -5,7 +5,7 @@ from pydub import AudioSegment as _AudioSegment, playback as _playback
 
 from . import theory as _theory
 
-AUDIO_CLIPS_PATH = "https://github.com/nouturnsign/ihypy/raw/master/instrument_audio_clips/"
+_AUDIO_CLIPS_PATH = "https://github.com/nouturnsign/ihypy/raw/master/instrument_audio_clips/"
 
 class Instrument(_abc.ABC):
     """Abstract class for instruments.
@@ -40,7 +40,7 @@ class Instrument(_abc.ABC):
     @property
     def base_sound(self) -> _AudioSegment:
         if "_base_audio_segment" not in vars(self):
-            r = _requests.get(AUDIO_CLIPS_PATH + self._base_sound)
+            r = _requests.get(_AUDIO_CLIPS_PATH + self._base_sound)
             f = _io.BytesIO(r.content)
             self._base_audio_segment = _AudioSegment.from_file(f, format = "wav")
         return self._base_audio_segment
