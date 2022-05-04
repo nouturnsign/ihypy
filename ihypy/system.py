@@ -686,7 +686,11 @@ class MusicalSystem(_abc.ABC):
 
         chord_instance = [[tonic]]
         for interval in chord.intervals:
-            chord_instance.append([_theory.Note(tonic.frequency * self.tuning_system.get_frequency_ratio(interval.relation))])
+            if interval.relation < 0:
+                # for slash chords
+                chord_instance.insert(0, [_theory.Note(tonic.frequency * self.tuning_system.get_frequency_ratio(interval.relation))])
+            else:
+                chord_instance.append([_theory.Note(tonic.frequency * self.tuning_system.get_frequency_ratio(interval.relation))])
         return chord_instance
 
 class WesternClassicalSystem(MusicalSystem):
