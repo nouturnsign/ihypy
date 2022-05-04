@@ -5,7 +5,7 @@ from pydub import AudioSegment as _AudioSegment, playback as _playback
 
 from . import theory as _theory
 
-AUDIO_CLIPS_PATH = "https://github.com/nouturnsign/ihypy/raw/master/ihypy/instrument_audio_clips/"
+AUDIO_CLIPS_PATH = "https://github.com/nouturnsign/ihypy/raw/master/instrument_audio_clips/"
 
 class Instrument(_abc.ABC):
     """Abstract class for instruments.
