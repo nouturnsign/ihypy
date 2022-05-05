@@ -7,6 +7,9 @@ from . import theory as _theory
 
 _AUDIO_CLIPS_PATH = "https://github.com/nouturnsign/ihypy/raw/master/instrument_audio_clips/"
 
+ASCENDING = 2
+DESCENDING = -1
+
 class Instrument(_abc.ABC):
     """Abstract class for instruments.
 
@@ -87,7 +90,7 @@ class Instrument(_abc.ABC):
         ----------
         note: Note
             The note to be played.
-        duration: int
+        duration: int = 1000
             The number of milliseconds over which the note should be played.
 
         Returns
@@ -96,34 +99,61 @@ class Instrument(_abc.ABC):
         """
         self.play_frequency(note.frequency, duration)
 
-    def play_scale(self, scale: list[_theory.Note], duration: int = 10000) -> None:
+    def play_scale(self, scale: list[_theory.Note], duration: int = 10000, direction: int | bool = ASCENDING) -> None:
         """Play the given instance of a scale of notes, generated using the timbre of the instrument.
         
         Parameters
         ----------
         scale: list[Note]
             The list of notes to be played.
-        duration: int
+        duration: int = 10000
             The number of milliseconds over which the scale should be played.
+        direction: int | bool
+            Whether to descend, ascend, descend and ascend, or ascend and descend the scale.
 
         Returns
         -------
         None
+
+        Notes
+        -----
+        direction takes on the following values: 
+            -1: descend
+            0 | False: descend, then ascend
+            1 | True: ascend, then descend
+            2: ascend
+        The constants DESCENDING = -1 and ASCENDING = 2 are defined to make this simpler, and this allows for inputs like DESCENDING > ASCENDING to mean "descending, then ascending", and ASCENDING > DESCENDING to mean "ascending, then descending". 
         """
-        note_duration = duration // len(scale)
+
+        direction = int(direction)
+        if direction == -1: # descend
+            directional_scale = scale[::-1]
+        elif direction == 0: # descend, then ascend
+            directional_scale = scale[::-1] + scale[1:]
+        elif direction == 1: # ascend, then descend
+            directional_scale = scale + scale[-2::-1]
+        elif direction == 2: # ascend
+            directional_scale = scale
+        else:
+            raise ValueError(f"Invalid value for direction: {direction}. Pick -1, 0, 1, or 2.")
+
+        note_duration = duration // len(directional_scale)
+
         # concatenates audio
-        new_sound = sum(self.__get_audio(note.frequency, note_duration) for note in scale)
+        new_sound = sum(self.__get_audio(note.frequency, note_duration) for note in directional_scale)
         _playback.play(new_sound)
 
-    def play_arpeggio(self, chord: list[list[_theory.Note]], duration: int = 10000) -> None:
+    def play_arpeggio(self, chord: list[list[_theory.Note]], duration: int = 10000, direction: int | bool = ASCENDING) -> None:
         """Play the given instance of a chord as an arpeggio, generated using the timbre of the instrument.
         
         Parameters
         ----------
         chord: list[list[Note]]
             The list of singletons containing notes to be played.
-        duration: int
+        duration: int = 10000
             The number of milliseconds over which the chord should be arpeggiated.
+        direction: int | bool = 1
+            See play_scale.
 
         Returns
         -------
@@ -131,7 +161,7 @@ class Instrument(_abc.ABC):
         """
         scale = list(voice[0] for voice in chord)
         # pseudo-scale
-        self.play_scale(scale, duration)
+        self.play_scale(scale, duration, direction)
 
     def play_chord(self, chord: list[list[_theory.Note]], duration: int = 1000) -> None:
         """Play the given instance of a chord as an arpeggio, generated using the timbre of the instrument.
@@ -140,7 +170,7 @@ class Instrument(_abc.ABC):
         ----------
         chord: list[list[Note]]
             The list of singletons containing notes to be played.
-        duration: int
+        duration: int = 1000
             The number of milliseconds over which the chord should be arpeggiated.
 
         Returns
