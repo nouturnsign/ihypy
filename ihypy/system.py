@@ -386,7 +386,7 @@ class MusicalSystem(_abc.ABC):
     def create_chord(self, scale: _theory.Chord, note: _theory.Note | str = None) -> list[list[_theory.Note]] | _theory.Chord:
         pass
 
-    def _create_scale(self, scale: _theory.Scale, note: _theory.Note | str) -> list[_theory.Note]:
+    def _create_semitone_scale(self, scale: _theory.SemitoneScale, note: _theory.Note | str) -> list[_theory.Note]:
         """Create a scale based on a starting note's notation and the scale structure.
 
         Parameters
@@ -728,13 +728,55 @@ class WesternClassicalSystem(MusicalSystem):
         delta_half_step = self.note_notation_system.get_interval_between(pitch_standard_notation, notation).relation
         return pitch_standard_frequency * self.tuning_system.get_frequency_ratio(delta_half_step)
 
-    def create_scale(self, scale: _theory.Scale, note: _theory.Note | str = None) -> list[_theory.Note]:
-        return self._create_scale(scale, note)
+    def create_scale(self, scale: _theory.SemitoneScale, note: _theory.Note | str = None) -> list[_theory.Note]:
+        """Create a scale based on a starting note's notation and the scale structure.
 
-    def create_interval(self, interval: _theory.Interval, note: _theory.Note | str = None) -> list[list[_theory.Note]] | _theory.Interval:
+        Parameters
+        ----------
+        scale : SemitoneScale
+            The structure of the scale.
+        note : Note | str
+            The notation as a string, or the note itself.
+    
+        Returns
+        -------
+        list[Note]
+            A list of notes.
+        """
+        return self._create_semitone_scale(scale, note)
+
+    def create_interval(self, interval: _theory.SemitoneInterval | str, note: _theory.Note | str = None) -> list[list[_theory.Note]] | _theory.SemitoneInterval:
+        """Create an interval based on a tonic note's notation and the interval structure.
+
+        Parameters
+        ----------
+        interval : SemitoneInterval | str
+            The structure of the scale. Either a string or SemitoneInterval.
+        note : Note | str = None
+            The tonic note's notation as a Note or string. If not specified, a generic interval will be returned.
+    
+        Returns
+        -------
+        list[list[Note]] | SemitoneInterval
+            A list of singletons containing one note, or a SemitoneInterval.
+        """
         return self._create_semitone_interval(interval, note)
 
-    def create_chord(self, scale: _theory.Chord, note: _theory.Note | str = None) -> list[list[_theory.Note]] | _theory.Chord:
+    def create_chord(self, scale: _theory.SemitoneChord, note: _theory.Note | str = None) -> list[list[_theory.Note]] | _theory.SemitoneChord:
+        """Create a chord based on a tonic note's notation and the chord structure.
+
+        Parameters
+        ----------
+        chord : SemitoneChord | str
+            The structure of the chord. Either a string or SemitoneInterval.
+        note : Note | str = None
+            The tonic note's notation as a Note or string. If not specified, a generic interval will be returned.
+    
+        Returns
+        -------
+        list[list[Note]] | SemitoneChord
+            A list of singletons containing one note, or a SemitoneChord.
+        """
         return self._create_semitone_chord(scale, note)
 
 class PtolemaicSystem(MusicalSystem):
@@ -772,11 +814,53 @@ class PtolemaicSystem(MusicalSystem):
         delta_half_step = self.note_notation_system.get_interval_between(pitch_standard_notation, notation).relation
         return pitch_standard_frequency * self.tuning_system.get_frequency_ratio(delta_half_step)
 
-    def create_scale(self, scale: _theory.Scale, note: _theory.Note | str = None) -> list[_theory.Note]:
-        return self._create_scale(scale, note)
+    def create_scale(self, scale: _theory.SemitoneScale, note: _theory.Note | str = None) -> list[_theory.Note]:
+        """Create a scale based on a starting note's notation and the scale structure.
 
-    def create_interval(self, interval: _theory.Interval, note: _theory.Note | str = None) -> list[list[_theory.Note]] | _theory.Interval:
+        Parameters
+        ----------
+        scale : SemitoneScale
+            The structure of the scale.
+        note : Note | str
+            The notation as a string, or the note itself.
+    
+        Returns
+        -------
+        list[Note]
+            A list of notes.
+        """
+        return self._create_semitone_scale(scale, note)
+
+    def create_interval(self, interval: _theory.SemitoneInterval | str, note: _theory.Note | str = None) -> list[list[_theory.Note]] | _theory.SemitoneInterval:
+        """Create an interval based on a tonic note's notation and the interval structure.
+
+        Parameters
+        ----------
+        interval : SemitoneInterval | str
+            The structure of the scale. Either a string or SemitoneInterval.
+        note : Note | str = None
+            The tonic note's notation as a Note or string. If not specified, a generic interval will be returned.
+    
+        Returns
+        -------
+        list[list[Note]] | SemitoneInterval
+            A list of singletons containing one note, or a SemitoneInterval.
+        """
         return self._create_semitone_interval(interval, note)
 
-    def create_chord(self, scale: _theory.Chord, note: _theory.Note | str = None) -> list[list[_theory.Note]] | _theory.Chord:
+    def create_chord(self, scale: _theory.SemitoneChord, note: _theory.Note | str = None) -> list[list[_theory.Note]] | _theory.SemitoneChord:
+        """Create a chord based on a tonic note's notation and the chord structure.
+
+        Parameters
+        ----------
+        chord : SemitoneChord | str
+            The structure of the chord. Either a string or SemitoneInterval.
+        note : Note | str = None
+            The tonic note's notation as a Note or string. If not specified, a generic interval will be returned.
+    
+        Returns
+        -------
+        list[list[Note]] | SemitoneChord
+            A list of singletons containing one note, or a SemitoneChord.
+        """
         return self._create_semitone_chord(scale, note)
