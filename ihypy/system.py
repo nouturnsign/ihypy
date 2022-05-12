@@ -323,6 +323,8 @@ class MusicalSystem(_abc.ABC):
         Create a specific interval or generic SemitoneInterval.
     create_chord(chord: SemitoneChord | str, note: Note | str = None) -> list[list[Note]] | SemitoneChord
         Create a specific chord or generic SemitoneChord. The original root of the chord will be ignored if note is None. If the root of the chord and note do not match, the chord will be transposed to note.
+    create_arpeggio(arpeggio: SemitoneChord, note: Note | str) -> list[list[Note]]
+        An alias for create_chord with instances of arpeggios specifically in mind.
 
     Notes
     -----
@@ -694,6 +696,23 @@ class MusicalSystem(_abc.ABC):
                 chord_instance.append([_theory.Note(tonic.frequency * self.tuning_system.get_frequency_ratio(interval.relation))])
         return chord_instance
 
+    def _create_semitone_arpeggio(self, arpeggio: _theory.SemitoneChord, note: _theory.Note | str) -> list[list[_theory.Note]]:
+        """Create an arpeggio based on a tonic note's notation and the chord structure.
+
+        Parameters
+        ----------
+        arpeggio : SemitoneChord
+            The structure of the arpeggio. 
+        note : Note | str
+            The tonic note's notation as a Note or string.
+    
+        Returns
+        -------
+        list[list[Note]]
+            A list of singletons containing one note.
+        """
+        return self._create_semitone_chord(arpeggio, note)
+
 class WesternClassicalSystem(MusicalSystem):
     """A standard Western classical system, using IPN and 12-TET.
     
@@ -780,6 +799,23 @@ class WesternClassicalSystem(MusicalSystem):
         """
         return self._create_semitone_chord(scale, note)
 
+    def create_arpeggio(self, arpeggio: _theory.SemitoneChord, note: _theory.Note | str) -> list[list[_theory.Note]]:
+        """Create an arpeggio based on a tonic note's notation and the chord structure.
+
+        Parameters
+        ----------
+        arpeggio : SemitoneChord
+            The structure of the arpeggio. 
+        note : Note | str
+            The tonic note's notation as a Note or string.
+    
+        Returns
+        -------
+        list[list[Note]]
+            A list of singletons containing one note.
+        """
+        return self._create_semitone_arpeggio(arpeggio, note)
+
 class PtolemaicSystem(MusicalSystem):
     """A Ptolemaic sequence, or justly tuned major scale, using IPN and 5-limit tuning.
     
@@ -865,3 +901,20 @@ class PtolemaicSystem(MusicalSystem):
             A list of singletons containing one note, or a SemitoneChord.
         """
         return self._create_semitone_chord(scale, note)
+
+    def create_arpeggio(self, arpeggio: _theory.SemitoneChord, note: _theory.Note | str) -> list[list[_theory.Note]]:
+        """Create an arpeggio based on a tonic note's notation and the chord structure.
+
+        Parameters
+        ----------
+        arpeggio : SemitoneChord
+            The structure of the arpeggio. 
+        note : Note | str
+            The tonic note's notation as a Note or string.
+    
+        Returns
+        -------
+        list[list[Note]]
+            A list of singletons containing one note.
+        """
+        return self._create_semitone_arpeggio(arpeggio, note)

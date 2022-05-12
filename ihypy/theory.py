@@ -87,7 +87,7 @@ class Piece(_abc.ABC):
     
     @_abc.abstractmethod
     def __init__(self):
-        pass
+        pass   
 
 class Scale(Piece):
     """Base class for scales, relationships defining sequences of notes.
@@ -109,19 +109,54 @@ class Scale(Piece):
         return self._units
 
 class SemitoneScale(Scale):
-    """Base class for semitone-based scales."""
+    """Base class for semitone-based scales.
+    
+    Attributes
+    ----------
+    octaves: int
+        How many octaves the scale spans.
+    
+    Methods
+    -------
+    arpeggiate(degrees: list[int] = [1, 3, 5]) -> SemitoneChord
+        Return a SemitoneChord that represents the arpeggio.
+    """
 
     def __init__(self, increment: list[float], octaves: int):
         if not isinstance(octaves, int) or octaves < 1:
             raise IntervalLengthError(octaves, "octave")
-        if not sum(increment) == 12:
-            raise IntervalLengthError(sum(increment), "halfsteps in octave")
+        # if not sum(increment) == 12:
+        #     raise IntervalLengthError(sum(increment), "halfsteps in octave")
+        self.octaves = octaves
         self._increment = increment * octaves
         self._unit = "semitones"
 
+    def arpeggiate(self, degrees: list[int] = [1, 3, 5]) -> "SemitoneChord":
+        """Convert a semitone scale into an arpeggio.
+        
+        Parameters
+        ----------
+        degrees: list[int] = [1, 3, 5]
+            Which degrees of the scale to be used in the scale, starting from the first degree of the scale. By default, the 1st, 3rd, and 5th are used.
+
+        Returns
+        -------
+        SemitoneChord
+            A semitone chord consisting of the intervals based on the degrees of the scale.
+        """
+        intervals = []
+        for octave in range(self.octaves):
+            for degree in degrees:
+                index = degree - 1
+                intervals.append(SemitoneInterval(12 * octave + sum(self.increment[:index]))) # could be faster with prefix sum if necessary
+        if SemitoneInterval(0) in intervals:
+            intervals.remove(SemitoneInterval(0))
+            intervals.append(SemitoneInterval(12 * self.octaves))
+        return SemitoneChord(intervals)
+
 class IonianScale(SemitoneScale):
     """One of the seven modern modes, commonly referred to as the major scale."""
-    def __init__(self, octaves : int = 1):
+    def __init__(self, octaves: int = 1):
         super().__init__([2, 2, 1, 2, 2, 2, 1], octaves)
 
 class DorianScale(SemitoneScale):
@@ -374,8 +409,6 @@ AugmentedThirteenth = MinorFourteenth
 DiminishedFifteenth = MajorFourteenth
 AugmentedFourteenth = DoubleOctave = PerfectFifteenth
 
-# TODO: define the intervals under https://en.wikipedia.org/wiki/Interval_(music)#Main_intervals
-
 class Chord(_abc.ABC):
     """An abstract class describing a chord.
     
@@ -410,10 +443,14 @@ class SemitoneChord(Chord):
     def __init__(self, intervals):
         self._intervals = intervals
 
+class MinorTriad(SemitoneChord):
+    """A minor triad."""
+
+    def __init__(self):
+        super().__init__([MinorThird(), PerfectFifth()])
+
 class MajorTriad(SemitoneChord):
     """A major triad."""
 
     def __init__(self):
         super().__init__([MajorThird(), PerfectFifth()])
-
-# TODO: define chord dictionary for consistency and interpretation
