@@ -490,9 +490,10 @@ class MusicalSystem(_abc.ABC):
         
         # pick a random octave, adjust to force it to go down
         octave = "4"
+        SEMITONES_IN_OCTAVE = 12 # TODO: Fix this assumption for other systems beyond 12-TET-like systems
         interval = self.note_notation_system.get_interval_between(root + octave, slash[1:] + octave)
         if interval.relation > 0:
-            interval = _theory.SemitoneInterval(interval.relation - 12)
+            interval = _theory.SemitoneInterval(interval.relation - SEMITONES_IN_OCTAVE)
         return interval
     
     def __parse_extension(self, extension):
