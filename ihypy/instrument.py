@@ -184,6 +184,19 @@ class Instrument(_abc.ABC):
         _playback.play(new_sound)
 
     def play_interval(self, interval: list[list[_theory.Note]], duration: int = 1000) -> None:
+        """Play the given instance of an interval, generated using the timbre of the instrument.
+        
+        Parameters
+        ----------
+        interval: list[list[Note]]
+            The list of singletons containing notes to be played.
+        duration: int = 1000
+            The number of milliseconds over which the chord should be arpeggiated.
+
+        Returns
+        -------
+        None
+        """
         self.play_chord(interval, duration)
 
 class Piano(Instrument):
