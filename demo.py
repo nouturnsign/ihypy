@@ -5,9 +5,9 @@ from ihypy.instrument import *
 # ihypy
 WCS = WesternClassicalSystem()
 piano = Piano()
-c_minor_scale_1_octave = WCS.create_scale(NaturalMinorScale(octaves = 1), "C3")
+c_minor_scale_2_octave = WCS.create_scale(NaturalMinorScale(octaves = 2), "C3")
 g_dominant_altered_chord = WCS.create_chord("G7f139sus2/D", "G2")
-piano.play_scale(c_minor_scale_1_octave, 6000, DESCENDING > ASCENDING)
+piano.play_scale(c_minor_scale_2_octave, 6000, DESCENDING > ASCENDING)
 piano.play_arpeggio(g_dominant_altered_chord, 2000)
 piano.play_chord(g_dominant_altered_chord)
 
