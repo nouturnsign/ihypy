@@ -321,9 +321,9 @@ class MusicalSystem(_abc.ABC):
         Create a list of notes starting from the given notation based on the scale increments and musical system's notation_system and tuning_system.
     create_interval(interval: SemitoneInterval | str, note: Note | str = None) -> list[list[Note]] | SemitoneInterval
         Create a specific interval or generic SemitoneInterval.
-    create_chord(chord: SemitoneChord | str, note: Note | str = None) -> list[list[Note]] | SemitoneChord
-        Create a specific chord or generic SemitoneChord. The original root of the chord will be ignored if note is None. If the root of the chord and note do not match, the chord will be transposed to note.
-    create_arpeggio(arpeggio: SemitoneChord, note: Note | str) -> list[list[Note]]
+    create_chord(chord: SemitoneChord | str, note: Note | str = None, include_note: bool = True) -> list[list[Note]] | SemitoneChord
+        Create a specific chord or generic SemitoneChord. The original root of the chord will be ignored if note is None or excluded if include_note is False. If the root of the chord and note do not match, the chord will be transposed to note.
+    create_arpeggio(arpeggio: SemitoneChord, note: Note | str, include_note: bool = True) -> list[list[Note]]
         An alias for create_chord with instances of arpeggios specifically in mind.
 
     Notes
