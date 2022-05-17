@@ -288,3 +288,18 @@ class Cello(Instrument):
     
     def __str__(self):
         return "Cello"
+
+class Triangle(Instrument):
+    """A generated triangle from an actual D#6.
+    
+    Notes
+    -----
+    Audio of D#6 taken from https://philharmonia.co.uk/resources/sound-samples/
+    """
+
+    def __init__(self):
+        self._base_sound = 'triangle-D#6.wav'
+        self._base_frequency = 1224
+    
+    def __str__(self):
+        return "Triangle"
