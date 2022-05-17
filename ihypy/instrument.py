@@ -45,7 +45,7 @@ class Instrument(_abc.ABC):
         if "_base_audio_segment" not in vars(self):
             r = _requests.get(_AUDIO_CLIPS_PATH + self._base_sound)
             f = _io.BytesIO(r.content)
-            self._base_audio_segment = _AudioSegment.from_wav(f)
+            self._base_audio_segment = _AudioSegment._from_safe_wav(f)
         return self._base_audio_segment
 
     @property
