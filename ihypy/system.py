@@ -432,6 +432,10 @@ class MusicalSystem(_abc.ABC):
         return _theory.Note(self.get_frequency(notation))
 
     @_abc.abstractmethod
+    def transpose(self, piece: list[list[_theory.Note]] | list[_theory.Note] | _theory.Note | str, by: list[_theory.Note] | _theory.Interval) -> _theory.Note:
+        pass
+
+    @_abc.abstractmethod
     def create_scale(self, scale: _theory.Scale, note: _theory.Note | str = None) -> list[_theory.Note]:
         pass
 
@@ -442,6 +446,40 @@ class MusicalSystem(_abc.ABC):
     @_abc.abstractmethod
     def create_chord(self, chord: _theory.Chord, note: _theory.Note | str = None) -> list[list[_theory.Note]] | _theory.Chord:
         pass
+
+    def _transpose_semitone(self, piece: list[list[_theory.Note]] | list[_theory.Note] | _theory.Note | str, by: list[str] | _theory.SemitoneInterval | int) -> list[list[_theory.Note]] | list[_theory.Note] | _theory.Note:
+        """Transpose a note.
+
+        Parameters
+        ----------
+        piece : list[list[Note]] | list[Note] | Note | str
+            A specific instance of a chord, interval, scale, note, or notation for a note.
+        by : list[str] | SemitoneInterval | int
+            A pair of notes that define an instance of the interval, the interval itself, or the number of semitones the interval describes.
+    
+        Returns
+        -------
+        list[list[Note]] | list[Note] | Note
+            The transposed piece.
+
+        Notes
+        -----
+        If by is a list, the interval goes from by[0] to by[1].
+        """
+        if isinstance(piece, list):
+            if isinstance(piece[0], list):
+                return list([self.transpose(voice[0], by)] for voice in piece)
+            else:
+                return list(self.transpose(note, by) for note in piece)
+        elif isinstance(piece, str):
+            return self.tranpose(self.create_note(piece), by)
+        
+        if isinstance(by, list):
+            return self.transpose(piece, self.note_notation_system.get_interval_between(by[0], by[1]))
+        elif isinstance(by, _theory.SemitoneInterval):
+            return self.transpose(piece, by.relation)
+
+        return piece.transpose(self.tuning_system.get_frequency_ratio(by))
 
     def _create_semitone_scale(self, scale: _theory.SemitoneScale, note: _theory.Note | str) -> list[_theory.Note]:
         """Create a scale based on a starting note's notation and the scale structure.
@@ -809,6 +847,27 @@ class WesternClassicalSystem(MusicalSystem):
         delta_half_step = self.note_notation_system.get_interval_between(pitch_standard_notation, notation).relation
         return pitch_standard_frequency * self.tuning_system.get_frequency_ratio(delta_half_step)
 
+    def transpose(self, piece: list[list[_theory.Note]] | list[_theory.Note] | _theory.Note | str, by: list[str] | _theory.SemitoneInterval | int) -> list[list[_theory.Note]] | list[_theory.Note] | _theory.Note:
+        """Transpose a note.
+
+        Parameters
+        ----------
+        piece : list[list[Note]] | list[Note] | Note | str
+            A specific instance of a chord, interval, scale, note, or notation for a note.
+        by : list[str] | SemitoneInterval | int
+            A pair of notes that define an instance of the interval, the interval itself, or the number of semitones the interval describes.
+    
+        Returns
+        -------
+        list[list[Note]] | list[Note] | Note
+            The transposed piece.
+
+        Notes
+        -----
+        If by is a list, the interval goes from by[0] to by[1].
+        """
+        return self._transpose_semitone(piece, by)
+
     def create_scale(self, scale: _theory.SemitoneScale, note: _theory.Note | str = None) -> list[_theory.Note]:
         """Create a scale based on a starting note's notation and the scale structure.
 
@@ -914,6 +973,27 @@ class PtolemaicSystem(MusicalSystem):
         delta_half_step = self.note_notation_system.get_interval_between(pitch_standard_notation, notation).relation
         return pitch_standard_frequency * self.tuning_system.get_frequency_ratio(delta_half_step)
 
+    def transpose(self, piece: list[list[_theory.Note]] | list[_theory.Note] | _theory.Note | str, by: list[str] | _theory.SemitoneInterval | int) -> list[list[_theory.Note]] | list[_theory.Note] | _theory.Note:
+        """Transpose a note.
+
+        Parameters
+        ----------
+        piece : list[list[Note]] | list[Note] | Note | str
+            A specific instance of a chord, interval, scale, note, or notation for a note.
+        by : list[str] | SemitoneInterval | int
+            A pair of notes that define an instance of the interval, the interval itself, or the number of semitones the interval describes.
+    
+        Returns
+        -------
+        list[list[Note]] | list[Note] | Note
+            The transposed piece.
+
+        Notes
+        -----
+        If by is a list, the interval goes from by[0] to by[1].
+        """
+        return self._transpose_semitone(piece, by)
+
     def create_scale(self, scale: _theory.SemitoneScale, note: _theory.Note | str = None) -> list[_theory.Note]:
         """Create a scale based on a starting note's notation and the scale structure.
 
@@ -1018,6 +1098,27 @@ class GermanNomenclatureSystem(MusicalSystem):
         pitch_standard_notation, pitch_standard_frequency = self.pitch_standard
         delta_half_step = self.note_notation_system.get_interval_between(pitch_standard_notation, notation).relation
         return pitch_standard_frequency * self.tuning_system.get_frequency_ratio(delta_half_step)
+
+    def transpose(self, piece: list[list[_theory.Note]] | list[_theory.Note] | _theory.Note | str, by: list[str] | _theory.SemitoneInterval | int) -> list[list[_theory.Note]] | list[_theory.Note] | _theory.Note:
+        """Transpose a note.
+
+        Parameters
+        ----------
+        piece : list[list[Note]] | list[Note] | Note | str
+            A specific instance of a chord, interval, scale, note, or notation for a note.
+        by : list[str] | SemitoneInterval | int
+            A pair of notes that define an instance of the interval, the interval itself, or the number of semitones the interval describes.
+    
+        Returns
+        -------
+        list[list[Note]] | list[Note] | Note
+            The transposed piece.
+
+        Notes
+        -----
+        If by is a list, the interval goes from by[0] to by[1].
+        """
+        return self._transpose_semitone(piece, by)
 
     def create_scale(self, scale: _theory.SemitoneScale, note: _theory.Note | str = None) -> list[_theory.Note]:
         """Create a scale based on a starting note's notation and the scale structure.
