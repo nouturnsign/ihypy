@@ -200,7 +200,6 @@ class InternationalPitchNotation(NoteNotationSystem):
             raise NotationError(to_notation, self)
         return _theory.SemitoneInterval(self.__get_absolute_half_step(to_notation) - self.__get_absolute_half_step(from_notation))
 
-# TODO: Define regexp and get absolute half step
 class HelmholtzPitchNotation(NoteNotationSystem):
     """The Helmholtz pitch notation, described by pitch name, accidental, and primes."""
     
@@ -377,9 +376,9 @@ class MusicalSystem(_abc.ABC):
         Create a list of notes starting from the given notation based on the scale increments and musical system's notation_system and tuning_system.
     create_interval(interval: SemitoneInterval | str, note: Note | str = None) -> list[list[Note]] | SemitoneInterval
         Create a specific interval or generic SemitoneInterval.
-    create_chord(chord: SemitoneChord | str, note: Note | str = None, include_note: bool = True) -> list[list[Note]] | SemitoneChord
-        Create a specific chord or generic SemitoneChord. The original root of the chord will be ignored if note is None or excluded if include_note is False. If the root of the chord and note do not match, the chord will be transposed to note.
-    create_arpeggio(arpeggio: SemitoneChord, note: Note | str, include_note: bool = True) -> list[list[Note]]
+    create_chord(chord: Chord | str, note: Note | str = None, include_note: bool = True) -> list[list[Note]] | Chord
+        Create a specific chord or generic Chord. The original root of the chord will be ignored if note is None or excluded if include_note is False. If the root of the chord and note do not match, the chord will be transposed to note.
+    create_arpeggio(arpeggio: Chord, note: Note | str, include_note: bool = True) -> list[list[Note]]
         An alias for create_chord with instances of arpeggios specifically in mind.
 
     Notes
@@ -441,7 +440,7 @@ class MusicalSystem(_abc.ABC):
         pass
 
     @_abc.abstractmethod
-    def create_chord(self, scale: _theory.Chord, note: _theory.Note | str = None) -> list[list[_theory.Note]] | _theory.Chord:
+    def create_chord(self, chord: _theory.Chord, note: _theory.Note | str = None) -> list[list[_theory.Note]] | _theory.Chord:
         pass
 
     def _create_semitone_scale(self, scale: _theory.SemitoneScale, note: _theory.Note | str) -> list[_theory.Note]:
@@ -844,7 +843,7 @@ class WesternClassicalSystem(MusicalSystem):
         """
         return self._create_semitone_interval(interval, note)
 
-    def create_chord(self, scale: _theory.SemitoneChord, note: _theory.Note | str = None) -> list[list[_theory.Note]] | _theory.SemitoneChord:
+    def create_chord(self, chord: _theory.SemitoneChord, note: _theory.Note | str = None) -> list[list[_theory.Note]] | _theory.SemitoneChord:
         """Create a chord based on a tonic note's notation and the chord structure.
 
         Parameters
@@ -859,7 +858,7 @@ class WesternClassicalSystem(MusicalSystem):
         list[list[Note]] | SemitoneChord
             A list of singletons containing one note, or a SemitoneChord.
         """
-        return self._create_semitone_chord(scale, note)
+        return self._create_semitone_chord(chord, note)
 
     def create_arpeggio(self, arpeggio: _theory.SemitoneChord, note: _theory.Note | str, include_note: bool = True) -> list[list[_theory.Note]]:
         """Create an arpeggio based on a tonic note's notation and the chord structure.
@@ -949,7 +948,7 @@ class PtolemaicSystem(MusicalSystem):
         """
         return self._create_semitone_interval(interval, note)
 
-    def create_chord(self, scale: _theory.SemitoneChord, note: _theory.Note | str = None) -> list[list[_theory.Note]] | _theory.SemitoneChord:
+    def create_chord(self, chord: _theory.SemitoneChord, note: _theory.Note | str = None) -> list[list[_theory.Note]] | _theory.SemitoneChord:
         """Create a chord based on a tonic note's notation and the chord structure.
 
         Parameters
@@ -964,7 +963,7 @@ class PtolemaicSystem(MusicalSystem):
         list[list[Note]] | SemitoneChord
             A list of singletons containing one note, or a SemitoneChord.
         """
-        return self._create_semitone_chord(scale, note)
+        return self._create_semitone_chord(chord, note)
 
     def create_arpeggio(self, arpeggio: _theory.SemitoneChord, note: _theory.Note | str, include_note: bool = True) -> list[list[_theory.Note]]:
         """Create an arpeggio based on a tonic note's notation and the chord structure.
@@ -1054,7 +1053,7 @@ class GermanNomenclatureSystem(MusicalSystem):
         """
         return self._create_semitone_interval(interval, note)
 
-    def create_chord(self, scale: _theory.SemitoneChord, note: _theory.Note | str = None) -> list[list[_theory.Note]] | _theory.SemitoneChord:
+    def create_chord(self, chord: _theory.SemitoneChord, note: _theory.Note | str = None) -> list[list[_theory.Note]] | _theory.SemitoneChord:
         """Create a chord based on a tonic note's notation and the chord structure.
 
         Parameters
@@ -1069,7 +1068,7 @@ class GermanNomenclatureSystem(MusicalSystem):
         list[list[Note]] | SemitoneChord
             A list of singletons containing one note, or a SemitoneChord.
         """
-        return self._create_semitone_chord(scale, note)
+        return self._create_semitone_chord(chord, note)
 
     def create_arpeggio(self, arpeggio: _theory.SemitoneChord, note: _theory.Note | str, include_note: bool = True) -> list[list[_theory.Note]]:
         """Create an arpeggio based on a tonic note's notation and the chord structure.
