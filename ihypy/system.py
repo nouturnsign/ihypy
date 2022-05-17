@@ -200,6 +200,62 @@ class InternationalPitchNotation(NoteNotationSystem):
             raise NotationError(to_notation, self)
         return _theory.SemitoneInterval(self.__get_absolute_half_step(to_notation) - self.__get_absolute_half_step(from_notation))
 
+# TODO: Define regexp and get absolute half step
+class HelmholtzPitchNotation(NoteNotationSystem):
+    """The Helmholtz pitch notation, described by pitch name, accidental, and primes."""
+    
+    def __init__(self):
+        self._pitch_conversion = {"C": 0, "D": 2, "E": 4, "F": 5, "G": 7, "A": 9, "B": 11,
+                                  "c": 12, "d": 14, "e": 16, "f": 17, "g": 19, "a": 21, "b": 23}
+        self._accidental_conversion = {"𝄫": -2, "bb": -2, "double_flat": -2, "df": -2,
+                                        "♭": -1, "b": -1, "flat": -1, "f": -1,
+                                        "♮": 0, "": 0, "natural": 0, "n": 0,
+                                        "♯": 1, "#": 1, "sharp": 1, "s": 1,
+                                        "𝄪": 2, "x": 2, "double_sharp": 2, "ds": 2}
+        self._prime_conversion = {"͵": -1, ",": -1, "⸜": -1,
+                                  "": 0, 
+                                  "′": 1, "'": 1, "⸝": 1}
+        self.__pitch = "(" + "|".join(self._pitch_conversion.keys()) + ")"
+        self.__accidental = "(" + "|".join(self._accidental_conversion.keys()) + ")"
+        self.__prime = "(" + "|".join(map(lambda p: p + "+", (p for p in self._prime_conversion.keys() if p != ""))) + ")?"
+        self._valid_notation_pattern = _re.compile(self.__pitch + self.__accidental + self.__prime)
+
+    def __str__(self):
+        return "Helmholtz Pitch Notation"
+
+    def __get_absolute_half_step(self, notation):
+        # get the absolute number of half_steps, with 0 half_steps defined as C.
+
+        sign = int(notation[0].islower()) * 2 - 1 # True -> sign = 1, False -> sign = -1
+        nprimes = len(notation) - 1
+        return self._pitch_conversion[notation[0]] + sign * 12 * nprimes
+
+    def get_interval_between(self, from_notation: str, to_notation: str) -> _theory.SemitoneInterval:
+        """Get the interval, in half_steps, between two pitches based on their notations.
+
+        Parameters
+        ----------
+        from_notation : str
+            The notation used to represent the starting note.
+        to_notation : str
+            The notation used to represent the ending note.
+
+        Returns
+        -------
+        SemitoneInterval
+            An interval with the number of half_steps. A negative number indicates going down.
+
+        Raises
+        ------
+        NotationError
+            If either of the notations are invalid.
+        """
+        if not self.validate_notation(from_notation):
+            raise NotationError(from_notation, self)
+        if not self.validate_notation(to_notation):
+            raise NotationError(to_notation, self)
+        return _theory.SemitoneInterval(self.__get_absolute_half_step(to_notation) - self.__get_absolute_half_step(from_notation))
+
 class IntervalNotationSystem(NotationSystem):
     """Abstract class for notation systems of musical intervals.
 
@@ -848,6 +904,111 @@ class PtolemaicSystem(MusicalSystem):
         ----------
         notation : str
             The IPN notation as a string.
+    
+        Returns
+        -------
+        float
+            The frequency, in Hz.
+        """
+        super().get_frequency(notation)
+        pitch_standard_notation, pitch_standard_frequency = self.pitch_standard
+        delta_half_step = self.note_notation_system.get_interval_between(pitch_standard_notation, notation).relation
+        return pitch_standard_frequency * self.tuning_system.get_frequency_ratio(delta_half_step)
+
+    def create_scale(self, scale: _theory.SemitoneScale, note: _theory.Note | str = None) -> list[_theory.Note]:
+        """Create a scale based on a starting note's notation and the scale structure.
+
+        Parameters
+        ----------
+        scale : SemitoneScale
+            The structure of the scale.
+        note : Note | str
+            The notation as a string, or the note itself.
+    
+        Returns
+        -------
+        list[Note]
+            A list of notes.
+        """
+        return self._create_semitone_scale(scale, note)
+
+    def create_interval(self, interval: _theory.SemitoneInterval | str, note: _theory.Note | str = None) -> list[list[_theory.Note]] | _theory.SemitoneInterval:
+        """Create an interval based on a tonic note's notation and the interval structure.
+
+        Parameters
+        ----------
+        interval : SemitoneInterval | str
+            The structure of the scale. Either a string or SemitoneInterval.
+        note : Note | str = None
+            The tonic note's notation as a Note or string. If not specified, a generic interval will be returned.
+    
+        Returns
+        -------
+        list[list[Note]] | SemitoneInterval
+            A list of singletons containing one note, or a SemitoneInterval.
+        """
+        return self._create_semitone_interval(interval, note)
+
+    def create_chord(self, scale: _theory.SemitoneChord, note: _theory.Note | str = None) -> list[list[_theory.Note]] | _theory.SemitoneChord:
+        """Create a chord based on a tonic note's notation and the chord structure.
+
+        Parameters
+        ----------
+        chord : SemitoneChord | str
+            The structure of the chord. Either a string or SemitoneInterval.
+        note : Note | str = None
+            The tonic note's notation as a Note or string. If not specified, a generic interval will be returned.
+    
+        Returns
+        -------
+        list[list[Note]] | SemitoneChord
+            A list of singletons containing one note, or a SemitoneChord.
+        """
+        return self._create_semitone_chord(scale, note)
+
+    def create_arpeggio(self, arpeggio: _theory.SemitoneChord, note: _theory.Note | str, include_note: bool = True) -> list[list[_theory.Note]]:
+        """Create an arpeggio based on a tonic note's notation and the chord structure.
+
+        Parameters
+        ----------
+        arpeggio : SemitoneChord
+            The structure of the arpeggio. 
+        note : Note | str
+            The tonic note's notation as a Note or string.
+        include_note : bool = True
+            Whether or not to include the tonic note at the bottom of the arpeggio. If False, the tonic will not be included at the bottom.
+    
+        Returns
+        -------
+        list[list[Note]]
+            A list of singletons containing one note.
+        """
+        return self._create_semitone_arpeggio(arpeggio, note, include_note)
+
+class GermanNomenclatureSystem(MusicalSystem):
+    """A standard German nomenclature system, using Helmholtz pitch notation and 12-TET.
+    
+    Methods
+    -------
+    get_frequency(notation: str) -> float
+        Get the frequency, tuned by 12-TET, associated with the notation expressed in IPN.
+    """
+
+    def __init__(self):
+        self._note_notation_system = HelmholtzPitchNotation()
+        self._interval_notation_system = QualityNumberSystem()
+        self._tuning_system = TwelveToneEqualTemperament()
+        self._pitch_standard_notation = "a'"
+        self._pitch_standard_frequency = 440
+        self._valid_chord_pattern = _re.compile("([A-G](𝄫|bb|double_flat|df|♭|b|flat|f|♮||natural|n|♯|#|sharp|s|𝄪|x|double_sharp|ds))(°|o|dim|ø|halfdim|m|min|minor|-|dom||M|Maj|Δ|aug|\+)?((°|o|dim|ø|halfdim|m|min|minor|-|dom||M|Maj|Δ|aug|\+)?(7|9|11|13))?((𝄫|bb|double_flat|df|♭|b|flat|f|♮||natural|n|♯|#|sharp|s|𝄪|x|double_sharp|ds)(5|6|7|9|11|13))*(sus(2|4|9|11))?(add(2|4|6|9))?(\/[A-G](𝄫|bb|double_flat|df|♭|b|flat|f|♮||natural|n|♯|#|sharp|s|𝄪|x|double_sharp|ds))?")
+
+    def get_frequency(self, notation: str) -> float:
+        """Get the 12-TET frequency of the Helmholtz pitch notation.
+
+        Parameters
+        ----------
+        notation : str
+            The Helmholtz pitch notation as a string.
     
         Returns
         -------
