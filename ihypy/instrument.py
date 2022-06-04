@@ -299,7 +299,7 @@ class Triangle(Instrument):
 
     def __init__(self):
         # TODO: Fix the header after conversion from mp3
-        self._base_sound = 'triangle-D#6.mp3'
+        self._base_sound = 'triangle-D#6.wav'
         self._base_frequency = 1224
     
     def __str__(self):
